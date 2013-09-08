@@ -56,6 +56,36 @@ config.cfg
 # shader files
 *.tmp
 
+#schroe2a: stuff I had to add after executing the mod via visual studio,
+# these files are created by doing the build and executing
 mp/game/bin
 mp/game/mod_hl2mp/bin
 
+mp/game/mod_hl2mp/cfg/server_blacklist.txt
+mp/game/mod_hl2mp/maps
+mp/game/mod_hl2mp/modelsounds.cache
+mp/game/mod_hl2mp/sound/sound.cache
+mp/game/mod_hl2mp/stats.txt
+mp/game/mod_hl2mp/user_custom/c1/*.dat
+mp/game/mod_hl2mp/voice_ban.dt
+*.sentinel
+mp/src/materialsystem/stdshaders/Debug_dx9_mod_hl2mp
+mp/src/utils/captioncompiler/Debug
+mp/src/utils/glview/debug
+mp/src/utils/height2normal/debug
+mp/src/utils/motionmapper/debug
+mp/src/utils/phonemeextractor/debug
+mp/src/utils/tgadiff/debug
+mp/src/utils/vbsp/debug
+mp/src/utils/vice/debug
+mp/src/utils/vrad/debug
+mp/src/utils/vrad_launcher/debug
+mp/src/utils/vtf2tga/debug
+mp/src/utils/vtfdiff/debug
+mp/src/utils/vvis/debug
+mp/src/utils/vvis_launcher/debug
+mp/src/utils/qc_eyes/debug
+mp/src/utils/serverplugin_sample/debug
+mp/src/vgui2/vgui_controls/generated_proto
+
+mp/src/lib/public/*.lib
