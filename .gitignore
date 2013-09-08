@@ -19,6 +19,8 @@ ipch
 *.idb
 *.vcxproj
 *.sln
+*.vpc_crc
+*.filters
 
 # OSX/Linux build products
 *.mak
@@ -53,4 +55,7 @@ config.cfg
 
 # shader files
 *.tmp
+
+mp/game/bin
+mp/game/mod_hl2mp/bin
 
