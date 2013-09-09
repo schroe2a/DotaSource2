@@ -1308,6 +1308,8 @@ void CNPC_FloorTurret::TippedThink( void )
 				info.SetDamage( 1 );
 				info.SetDamageType( DMG_CRUSH );
 				Event_Killed( info );
+				inputdata_t data;
+				InputSelfDestruct( data );
 			}
 		}
 		else if ( IsActivityFinished() )
@@ -1890,7 +1892,7 @@ QAngle CNPC_FloorTurret::PreferredCarryAngles( void )
 	static QAngle g_prefAngles;
 
 	Vector vecUserForward;
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	pPlayer->EyeVectors( &vecUserForward );
 
 	// If we're looking up, then face directly forward
@@ -2148,6 +2150,15 @@ void CNPC_FloorTurret::InputSelfDestruct( inputdata_t &inputdata )
 	}
 }
 
+Disposition_t CNPC_FloorTurret::IRelationType ( CBaseEntity *pTarget )
+{
+	if ( pTarget && pTarget->Classify() == CLASS_ANTLION )
+	{
+		return D_LI;
+	}
+
+	return BaseClass::IRelationType( pTarget );
+}
 // 
 // Tip controller
 //

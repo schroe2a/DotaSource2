@@ -26,14 +26,7 @@ CBaseEntity* MoveToRandomSpot( CBaseEntity *pEnt )
 {
 	if ( pEnt )
 	{
-		CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
-		if ( pLocalPlayer )
-		{			
-			Vector vForward;
-			pLocalPlayer->EyeVectors(&vForward );
-
-			UTIL_SetOrigin( pEnt, GetRandomSpot() );
-		}
+		UTIL_SetOrigin( pEnt, GetRandomSpot() );
 	}
 
 	return pEnt;
@@ -149,4 +142,5 @@ ConCommand cc_Test_InitRandomEntitySpawner( "Test_InitRandomEntitySpawner", Test
 ConCommand cc_Test_SpawnRandomEntities( "Test_SpawnRandomEntities", Test_SpawnRandomEntities, 0, FCVAR_CHEAT );
 ConCommand cc_Test_RandomizeInPVS( "Test_RandomizeInPVS", Test_RandomizeInPVS, 0, FCVAR_CHEAT );
 ConCommand cc_Test_RemoveAllRandomEntities( "Test_RemoveAllRandomEntities", Test_RemoveAllRandomEntities, 0, FCVAR_CHEAT );
+
 

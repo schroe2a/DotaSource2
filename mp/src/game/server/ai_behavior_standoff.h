@@ -92,7 +92,7 @@ public:
 	virtual const char *GetName() {	return "Standoff"; }
 
 	void		SetActive( bool fActive );
-	void		SetParameters( const AI_StandoffParams_t &params, CAI_GoalEntity *pGoalEntity = NULL );
+	void		SetParameters( const AI_StandoffParams_t &params, CBaseEntity *pGoalEntity = NULL );
 
 	Vector		GetStandoffGoalPosition();
 	void		SetStandoffGoalPosition( const Vector &vecPos );

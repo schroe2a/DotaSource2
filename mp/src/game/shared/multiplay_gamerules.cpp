@@ -617,19 +617,19 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	//=========================================================
 	float CMultiplayRules::FlPlayerFallDamage( CBasePlayer *pPlayer )
 	{
-		int iFallDamage = (int)falldamage.GetFloat();
+/*		int iFallDamage = (int)falldamage.GetFloat();
 
 		switch ( iFallDamage )
 		{
 		case 1://progressive
-			pPlayer->m_Local.m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
+*/			pPlayer->m_Local.m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
 			return pPlayer->m_Local.m_flFallVelocity * DAMAGE_FOR_FALL_SPEED;
-			break;
+/*			break;
 		default:
 		case 0:// fixed
 			return 10;
 			break;
-		}
+		}*/
 	} 
 
 	//=========================================================
@@ -771,7 +771,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 			if ( UseSuicidePenalty() )
 			{
 				// Players lose a frag for killing themselves
-				pVictim->IncrementFragCount( -1 );
+				//pVictim->IncrementFragCount( -1 );
 			}			
 		}
 		else if ( pScorer )

@@ -13,11 +13,29 @@
 
 #include <vgui/IScheme.h>
 #include <vgui_controls/Button.h>
+#include <vgui_controls/ImagePanel.h>
 #include <vgui/KeyCode.h>
 #include <filesystem.h>
+#include "hl2mp_gamerules.h"
+#include "herodef.h"
+#include <vgui_controls/RichText.h>
 
 extern vgui::Panel *g_lastPanel;
 extern vgui::Button *g_lastButton;
+
+class CClassImagePanel : public vgui::ImagePanel
+{
+    public:
+        typedef vgui::ImagePanel BaseClass;
+        CClassImagePanel( vgui::Panel *pParent, const char *pName );
+        virtual ~CClassImagePanel();
+        virtual void ApplySettings( KeyValues *inResourceData );
+        virtual void Paint();
+    public:
+        char m_ModelName[128];
+};
+
+extern CUtlVector<CClassImagePanel*> g_ClassImagePanels;
 
 //-----------------------------------------------------------------------------
 // Purpose: Triggers a new panel when the mouse goes over the button
@@ -54,7 +72,7 @@ public:
 		m_bPreserveArmedButtons = false;
 		m_bUpdateDefaultButtons = false;
 	}
-
+	
 	virtual void SetPreserveArmedButtons( bool bPreserve ){ m_bPreserveArmedButtons = bPreserve; }
 	virtual void SetUpdateDefaultButtons( bool bUpdate ){ m_bUpdateDefaultButtons = bUpdate; }
 
@@ -79,14 +97,14 @@ public:
 	const char *GetClassPage( const char *className )
 	{
 		static char classPanel[ _MAX_PATH ];
-		Q_snprintf( classPanel, sizeof( classPanel ), "classes/%s.res", className);
+		Q_snprintf( classPanel, sizeof( classPanel ), "resource/classes/%s.res", className);
 
 		if ( g_pFullFileSystem->FileExists( classPanel, IsX360() ? "MOD" : "GAME" ) )
 		{
 		}
-		else if (g_pFullFileSystem->FileExists( "classes/default.res", IsX360() ? "MOD" : "GAME" ) )
+		else if (g_pFullFileSystem->FileExists( "resource/classes/default.res", "MOD" ) )
 		{
-			Q_snprintf ( classPanel, sizeof( classPanel ), "classes/default.res" );
+			Q_snprintf ( classPanel, sizeof( classPanel ), "resource/classes/default.res" );
 		}
 		else
 		{
@@ -109,9 +127,56 @@ public:
 	{
 		BaseClass::ApplySettings( resourceData );
 
-		// name, position etc of button is set, now load matching
+		// name, position etc of button is set, now load matching		
 		// resource file for associated info panel:
+
 		m_pPanel->LoadControlSettings( GetClassPage( GetName() ) );
+		
+		char text[500];
+		char textBoxName[64];
+		const char * skillClass;
+		int cooldown;
+		int duration;
+		float formula;
+		const char * label;
+		vgui::RichText * entry;
+
+		for( int iSkill = 1; iSkill<=4; iSkill++ )
+		{
+			skillClass = HL2MPRules()->GetSkillClassForHero( GetHeroDef()->Index( GetName() ), iSkill );
+			
+			Q_snprintf( text, sizeof(text), "%s: %s", HL2MPRules()->GetSkillName( skillClass ), HL2MPRules()->GetSkillDesc( skillClass ) ); 
+
+			for( int iLevel = 1; iLevel<=4; iLevel++ )
+			{
+				if( iSkill == 4 && iLevel == 4 ) continue;
+
+				cooldown = HL2MPRules()->GetSkillCooldown( skillClass, iLevel );
+				duration = HL2MPRules()->GetSkillDuration( skillClass, iLevel );
+				formula = HL2MPRules()->GetSkillFormula( skillClass, iLevel );
+				label = HL2MPRules()->GetSkillFormulaLabel( skillClass, iLevel );
+
+				Q_snprintf( text, sizeof(text), "%s\nLevel %i", text, iLevel );
+				if( cooldown != 0 )
+					Q_snprintf( text, sizeof(text), "%s, Cooldown:%i", text, cooldown );
+
+				if( duration != 0 )
+					Q_snprintf( text, sizeof(text), "%s, Duration:%i", text, duration );
+
+				if( formula != 0 )
+					Q_snprintf( text, sizeof(text), "%s, %.2f", text, formula );
+
+				if( label != NULL )
+					Q_snprintf( text, sizeof(text), "%s %s", text, label );
+			}
+			
+			Q_snprintf( textBoxName, sizeof(textBoxName), "Skill%iText", iSkill );			
+			entry = dynamic_cast<vgui::RichText *>(m_pPanel->FindChildByName(textBoxName));
+			if (entry)
+			{
+				entry->SetText(text);
+			}
+		}	
 	}		
 
 	T *GetClassPanel( void ) { return m_pPanel; }

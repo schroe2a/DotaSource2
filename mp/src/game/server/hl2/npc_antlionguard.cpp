@@ -34,6 +34,7 @@
 #include "Sprite.h"
 #include "particle_parse.h"
 #include "particle_system.h"
+#include "hl2mp_player.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -286,6 +287,8 @@ public:
 	virtual bool	ShouldProbeCollideAgainstEntity( CBaseEntity *pEntity );
 
 	virtual Activity	NPC_TranslateActivity( Activity baseAct );
+
+	bool	PassesDamageFilter( const CTakeDamageInfo &info );
 
 #if HL2_EPISODIC
 	//---------------------------------
@@ -637,6 +640,8 @@ CNPC_AntlionGuard::CNPC_AntlionGuard( void )
 	m_bInCavern = false;
 
 	m_iszPhysicsPropClass = AllocPooledString( "prop_physics" );
+
+	m_iMoneyToGive = 500;
 }
 
 LINK_ENTITY_TO_CLASS( npc_antlionguard, CNPC_AntlionGuard );
@@ -972,7 +977,7 @@ int CNPC_AntlionGuard::SelectUnreachableSchedule( void )
 		}
 
 		// If we're under attack, then let's leave for a bit
-		if ( GetEnemy() && HasCondition( COND_HEAVY_DAMAGE ) )
+		if ( GetEnemy() ) //&& HasCondition( COND_HEAVY_DAMAGE ) )
 		{
 			Vector dir = GetEnemy()->GetAbsOrigin() - GetAbsOrigin();
 			VectorNormalize(dir);
@@ -1604,8 +1609,7 @@ public:
 //-----------------------------------------------------------------------------
 void CNPC_AntlionGuard::Footstep( bool bHeavy )
 {
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
-	Assert( pPlayer != NULL );
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 	if ( pPlayer == NULL )
 		return;
 
@@ -2148,6 +2152,13 @@ int CNPC_AntlionGuard::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			return 0;
 		}
 	}
+
+	CRecipientFilter user;
+	user.AddRecipientsByTeam( this->GetTeam() );
+	user.MakeReliable();
+	char szText[200];
+	Q_snprintf( szText, sizeof(szText), "Your aAlly guardian is under attack from an enemy!" );
+	UTIL_ClientPrintFilter( user, HUD_PRINTCENTER, szText );
 
 	// Hack to make antlion guard harder in HARD
 	if ( g_pGameRules->IsSkillLevel(SKILL_HARD) && !(info.GetDamageType() & DMG_CRUSH) )
@@ -3174,7 +3185,7 @@ void CNPC_AntlionGuard::SummonAntlions( void )
 		}
 
 		// Ensure it's dirt or sand
-		const surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );
+		/*const surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );
 		if ( ( pdata->game.material != CHAR_TEX_DIRT ) && ( pdata->game.material != CHAR_TEX_SAND ) )
 		{
 			if ( g_debug_antlionguard.GetInt() == 2 )
@@ -3182,7 +3193,7 @@ void CNPC_AntlionGuard::SummonAntlions( void )
 				NDebugOverlay::Box( tr.endpos, NAI_Hull::Mins( HULL_MEDIUM ), NAI_Hull::Maxs( HULL_MEDIUM ), 255, 128, 128, true, 5.0f );
 			}
 			continue;
-		}
+		}*/
 
 		// Make sure the guard can see it
 		trace_t	tr_vis;
@@ -3247,6 +3258,10 @@ void CNPC_AntlionGuard::SummonAntlions( void )
 			pAntlion->SetState( NPC_STATE_COMBAT );
 			pAntlion->UpdateEnemyMemory( GetEnemy(), GetEnemy()->GetAbsOrigin() );
 		}
+
+		pAntlion->ChangeTeam( this->GetTeamNumber() );
+
+		pAntlion->SetOwnerEntity( this );
 
 		m_iNumLiveAntlions++;
 	}
@@ -4599,7 +4614,13 @@ void	CNPC_AntlionGuard::PopulatePoseParameters( void )
 
 	BaseClass::PopulatePoseParameters();
 }
+bool CNPC_AntlionGuard::PassesDamageFilter( const CTakeDamageInfo &info )
+{
+	if ( info.GetAttacker()->ClassMatches( "npc_turret_floor" ) )
+		return false;
 
+	return BaseClass::PassesDamageFilter( info );
+}
 #if ANTLIONGUARD_BLOOD_EFFECTS
 //-----------------------------------------------------------------------------
 // Purpose: Return desired level for the continuous bleeding effect (not the 
@@ -4827,8 +4848,6 @@ AI_BEGIN_CUSTOM_NPC( npc_antlionguard, CNPC_AntlionGuard )
 	//		If we're here, the guard can't chase enemy, can't find a physobject to attack with, and can't summon
 	//==================================================
 
-#ifdef HL2_EPISODIC
-
 	DEFINE_SCHEDULE
 	( 
 		SCHED_ANTLIONGUARD_CANT_ATTACK,
@@ -4846,20 +4865,6 @@ AI_BEGIN_CUSTOM_NPC( npc_antlionguard, CNPC_AntlionGuard )
 		"		COND_ANTLIONGUARD_PHYSICS_TARGET"
 		"		COND_HEAVY_DAMAGE"
 	)
-
-#else
-
-	DEFINE_SCHEDULE
-	( 
-	SCHED_ANTLIONGUARD_CANT_ATTACK,
-
-	"	Tasks"
-	"		TASK_WAIT								5"
-	""
-	"	Interrupts"
-	)
-
-#endif
 
 	//==================================================
 	// SCHED_ANTLIONGUARD_PHYSICS_DAMAGE_HEAVY

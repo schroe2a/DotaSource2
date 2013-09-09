@@ -442,3 +442,13 @@ void CTeamMenu::OnKeyCodePressed(KeyCode code)
 		BaseClass::OnKeyCodePressed( code );
 	}
 }
+void CTeamMenu::OnCommand( const char *command )
+{
+	if ( Q_stricmp( command, "vguicancel" ) )
+	{
+		engine->ClientCmd( const_cast<char *>( command ) );
+	}
+	Close();
+	gViewPortInterface->ShowBackGround( false );
+	BaseClass::OnCommand(command);	
+}

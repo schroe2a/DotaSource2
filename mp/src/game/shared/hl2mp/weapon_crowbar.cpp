@@ -57,6 +57,10 @@ acttable_t	CWeaponCrowbar::m_acttable[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_MELEE,			false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_MELEE,					false },
+
+	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
+	{ ACT_IDLE,				ACT_IDLE_ANGRY_MELEE,	false },
+	{ ACT_IDLE_ANGRY,		ACT_IDLE_ANGRY_MELEE,	false },
 };
 
 IMPLEMENT_ACTTABLE(CWeaponCrowbar);
@@ -77,7 +81,7 @@ CWeaponCrowbar::CWeaponCrowbar( void )
 //-----------------------------------------------------------------------------
 float CWeaponCrowbar::GetDamageForActivity( Activity hitActivity )
 {
-	return 25.0f;
+	return 15.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -101,6 +105,57 @@ void CWeaponCrowbar::AddViewKick( void )
 
 
 #ifndef CLIENT_DLL
+
+//-----------------------------------------------------------------------------
+// Attempt to lead the target (needed because citizens can't hit manhacks with the crowbar!)
+//-----------------------------------------------------------------------------
+ConVar sk_crowbar_lead_time( "sk_crowbar_lead_time", "0.9" );
+
+int CWeaponCrowbar::WeaponMeleeAttack1Condition( float flDot, float flDist )
+{
+	// Attempt to lead the target (needed because citizens can't hit manhacks with the crowbar!)
+	CAI_BaseNPC *pNPC	= GetOwner()->MyNPCPointer();
+	CBaseEntity *pEnemy = pNPC->GetEnemy();
+	if (!pEnemy)
+		return COND_NONE;
+
+	Vector vecVelocity;
+	vecVelocity = pEnemy->GetSmoothedVelocity( );
+
+	// Project where the enemy will be in a little while
+	float dt = sk_crowbar_lead_time.GetFloat();
+	dt += random->RandomFloat( -0.3f, 0.2f );
+	if ( dt < 0.0f )
+		dt = 0.0f;
+
+	Vector vecExtrapolatedPos;
+	VectorMA( pEnemy->WorldSpaceCenter(), dt, vecVelocity, vecExtrapolatedPos );
+
+	Vector vecDelta;
+	VectorSubtract( vecExtrapolatedPos, pNPC->WorldSpaceCenter(), vecDelta );
+
+	if ( fabs( vecDelta.z ) > 70 )
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	Vector vecForward = pNPC->BodyDirection2D( );
+	vecDelta.z = 0.0f;
+	float flExtrapolatedDist = Vector2DNormalize( vecDelta.AsVector2D() );
+	if ((flDist > 64) && (flExtrapolatedDist > 64))
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	float flExtrapolatedDot = DotProduct2D( vecDelta.AsVector2D(), vecForward.AsVector2D() );
+	if ((flDot < 0.7) && (flExtrapolatedDot < 0.7))
+	{
+		return COND_NOT_FACING_ATTACK;
+	}
+
+	return COND_CAN_MELEE_ATTACK1;
+}
+
 //-----------------------------------------------------------------------------
 // Animation event handlers
 //-----------------------------------------------------------------------------
@@ -110,6 +165,22 @@ void CWeaponCrowbar::HandleAnimEventMeleeHit( animevent_t *pEvent, CBaseCombatCh
 	// But only if we're basically facing that direction
 	Vector vecDirection;
 	AngleVectors( GetAbsAngles(), &vecDirection );
+
+	CBaseEntity *pEnemy = pOperator->MyNPCPointer() ? pOperator->MyNPCPointer()->GetEnemy() : NULL;
+	if ( pEnemy )
+	{
+		Vector vecDelta;
+		VectorSubtract( pEnemy->WorldSpaceCenter(), pOperator->Weapon_ShootPosition(), vecDelta );
+		VectorNormalize( vecDelta );
+		
+		Vector2D vecDelta2D = vecDelta.AsVector2D();
+		Vector2DNormalize( vecDelta2D );
+		if ( DotProduct2D( vecDelta2D, vecDirection.AsVector2D() ) > 0.8f )
+		{
+			vecDirection = vecDelta;
+		}
+	}
+
 
 	Vector vecEnd;
 	VectorMA( pOperator->Weapon_ShootPosition(), 50, vecDirection, vecEnd );
@@ -151,56 +222,6 @@ void CWeaponCrowbar::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 	}
 }
 
-//-----------------------------------------------------------------------------
-// Attempt to lead the target (needed because citizens can't hit manhacks with the crowbar!)
-//-----------------------------------------------------------------------------
-ConVar sk_crowbar_lead_time( "sk_crowbar_lead_time", "0.9" );
-
-int CWeaponCrowbar::WeaponMeleeAttack1Condition( float flDot, float flDist )
-{
-	// Attempt to lead the target (needed because citizens can't hit manhacks with the crowbar!)
-	CAI_BaseNPC *pNPC	= GetOwner()->MyNPCPointer();
-	CBaseEntity *pEnemy = pNPC->GetEnemy();
-	if (!pEnemy)
-		return COND_NONE;
-
-	Vector vecVelocity;
-	vecVelocity = pEnemy->GetSmoothedVelocity( );
-
-	// Project where the enemy will be in a little while
-	float dt = sk_crowbar_lead_time.GetFloat();
-	dt += SharedRandomFloat( "crowbarmelee1", -0.3f, 0.2f );
-	if ( dt < 0.0f )
-		dt = 0.0f;
-
-	Vector vecExtrapolatedPos;
-	VectorMA( pEnemy->WorldSpaceCenter(), dt, vecVelocity, vecExtrapolatedPos );
-
-	Vector vecDelta;
-	VectorSubtract( vecExtrapolatedPos, pNPC->WorldSpaceCenter(), vecDelta );
-
-	if ( fabs( vecDelta.z ) > 70 )
-	{
-		return COND_TOO_FAR_TO_ATTACK;
-	}
-
-	Vector vecForward = pNPC->BodyDirection2D( );
-	vecDelta.z = 0.0f;
-	float flExtrapolatedDist = Vector2DNormalize( vecDelta.AsVector2D() );
-	if ((flDist > 64) && (flExtrapolatedDist > 64))
-	{
-		return COND_TOO_FAR_TO_ATTACK;
-	}
-
-	float flExtrapolatedDot = DotProduct2D( vecDelta.AsVector2D(), vecForward.AsVector2D() );
-	if ((flDot < 0.7) && (flExtrapolatedDot < 0.7))
-	{
-		return COND_NOT_FACING_ATTACK;
-	}
-
-	return COND_CAN_MELEE_ATTACK1;
-}
-
 #endif
 
 
@@ -224,5 +245,6 @@ float CWeaponCrowbar::GetFireRate( void )
 {
 	return	CROWBAR_REFIRE;	
 }
+
 
 

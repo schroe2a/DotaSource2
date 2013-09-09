@@ -139,13 +139,13 @@ void CTargetID::Paint()
 	// Is this an entindex sent by the server?
 	if ( iEntIndex )
 	{
-		C_BasePlayer *pPlayer = static_cast<C_BasePlayer*>(cl_entitylist->GetEnt( iEntIndex ));
-		C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+		C_HL2MP_Player *pPlayer = ToHL2MPPlayer(cl_entitylist->GetEnt( iEntIndex ));
+		C_HL2MP_Player *pLocalPlayer = C_HL2MP_Player::GetLocalHL2MPPlayer();
 
 		const char *printFormatString = NULL;
 		wchar_t wszPlayerName[ MAX_PLAYER_NAME_LENGTH ];
 		wchar_t wszHealthText[ 10 ];
-		bool bShowHealth = false;
+		wchar_t wszLevelText[ 10 ];
 		bool bShowPlayerName = false;
 
 		// Some entities we always want to check, cause the text may change
@@ -160,35 +160,25 @@ void CTargetID::Paint()
 			
 			if ( HL2MPRules()->IsTeamplay() == true && pPlayer->InSameTeam(pLocalPlayer) )
 			{
-				printFormatString = "#Playerid_sameteam";
-				bShowHealth = true;
+				printFormatString = "#Playerid_sameteam";				
 			}
 			else
 			{
 				printFormatString = "#Playerid_diffteam";
 			}
 		
-
-			if ( bShowHealth )
-			{
-				_snwprintf( wszHealthText, ARRAYSIZE(wszHealthText) - 1, L"%.0f%%",  ((float)pPlayer->GetHealth() / (float)pPlayer->GetMaxHealth() ) );
-				wszHealthText[ ARRAYSIZE(wszHealthText)-1 ] = '\0';
-			}
+			_snwprintf( wszHealthText, ARRAYSIZE(wszHealthText) - 1, L"%.0f%%",  ((float)pPlayer->GetHealth() / (float)pPlayer->GetMaxHealth() ) );
+			wszHealthText[ ARRAYSIZE(wszHealthText)-1 ] = '\0';
+			
+			_snwprintf( wszLevelText, ARRAYSIZE(wszLevelText) - 1, L"%i",  pPlayer->GetLevel() );
+			wszLevelText[ ARRAYSIZE(wszLevelText)-1 ] = '\0';
 		}
 
 		if ( printFormatString )
 		{
-			if ( bShowPlayerName && bShowHealth )
+			if ( bShowPlayerName )
 			{
-				g_pVGuiLocalize->ConstructString( sIDString, sizeof(sIDString), g_pVGuiLocalize->Find(printFormatString), 2, wszPlayerName, wszHealthText );
-			}
-			else if ( bShowPlayerName )
-			{
-				g_pVGuiLocalize->ConstructString( sIDString, sizeof(sIDString), g_pVGuiLocalize->Find(printFormatString), 1, wszPlayerName );
-			}
-			else if ( bShowHealth )
-			{
-				g_pVGuiLocalize->ConstructString( sIDString, sizeof(sIDString), g_pVGuiLocalize->Find(printFormatString), 1, wszHealthText );
+				g_pVGuiLocalize->ConstructString( sIDString, sizeof(sIDString), g_pVGuiLocalize->Find(printFormatString), 3, wszPlayerName, wszHealthText, wszLevelText );
 			}
 			else
 			{

@@ -39,6 +39,15 @@ END_PREDICTION_DATA()
 static const Vector g_bludgeonMins(-BLUDGEON_HULL_DIM,-BLUDGEON_HULL_DIM,-BLUDGEON_HULL_DIM);
 static const Vector g_bludgeonMaxs(BLUDGEON_HULL_DIM,BLUDGEON_HULL_DIM,BLUDGEON_HULL_DIM);
 
+#ifndef CLIENT_DLL
+
+int CBaseHL2MPBludgeonWeapon::CapabilitiesGet()
+{ 
+	return bits_CAP_WEAPON_MELEE_ATTACK1; 
+}
+
+#endif
+
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------

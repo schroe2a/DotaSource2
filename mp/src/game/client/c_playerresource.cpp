@@ -131,6 +131,7 @@ const char *C_PlayerResource::GetPlayerName( int iIndex )
 {
 	if ( iIndex < 1 || iIndex > MAX_PLAYERS )
 	{
+		//TODO: if a NPC kills a player, we get here....
 		Assert( false );
 		return PLAYER_ERROR_NAME;
 	}

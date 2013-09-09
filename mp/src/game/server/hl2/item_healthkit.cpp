@@ -7,7 +7,7 @@
 
 #include "cbase.h"
 #include "gamerules.h"
-#include "player.h"
+#include "hl2mp_player.h"
 #include "items.h"
 #include "in_buttons.h"
 #include "engine/IEngineSound.h"
@@ -304,7 +304,7 @@ void CWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 	if ( !pActivator->IsPlayer() )
 		return;
 
-	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(pActivator);
+	CHL2MP_Player *pPlayer = dynamic_cast<CHL2MP_Player *>(pActivator);
 
 	// Reset to a state of continuous use.
 	m_iCaps = FCAP_CONTINUOUS_USE;
@@ -329,7 +329,7 @@ void CWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 		return;
 	}
 
-	if( pActivator->GetHealth() >= pActivator->GetMaxHealth() )
+	if( pPlayer && pPlayer->GetHealth() >= pPlayer->GetMaxHealth() )
 	{
 		if( pPlayer )
 		{
@@ -604,7 +604,10 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	// if it's not a player, ignore
 	if ( !pActivator->IsPlayer() )
 		return;
-	CBasePlayer *pPlayer = dynamic_cast<CBasePlayer *>(pActivator);
+
+	CHL2MP_Player *pPlayer = dynamic_cast<CHL2MP_Player *>(pActivator);
+	if( !pPlayer )
+		return;
 
 	// Reset to a state of continuous use.
 	m_iCaps = FCAP_CONTINUOUS_USE;
@@ -628,7 +631,7 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 	// if the player doesn't have the suit, or there is no juice left, make the deny noise.
 	// disabled HEV suit dependency for now.
-	//if ((m_iJuice <= 0) || (!(pActivator->m_bWearingSuit)))
+	//if ((m_iJuice <= 0) || (!(pPlayer->m_bWearingSuit)))
 	if (m_iJuice <= 0)
 	{
 		if (m_flSoundTime <= gpGlobals->curtime)
@@ -639,19 +642,16 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		return;
 	}
 
-	if( pActivator->GetHealth() >= pActivator->GetMaxHealth() )
+	if( pPlayer->GetHealth() >= pPlayer->GetMaxHealth() )
 	{
-		if( pPlayer )
-		{
-			pPlayer->m_afButtonPressed &= ~IN_USE;
-		}
-
+		pPlayer->m_afButtonPressed &= ~IN_USE;
+		
 		// Make the user re-use me to get started drawing health.
 		m_iCaps = FCAP_IMPULSE_USE;
 		
 		EmitSound( "WallHealth.Deny" );
 		return;
-	}
+	}	
 
 	SetNextThink( gpGlobals->curtime + CHARGE_RATE );
 	SetThink( &CNewWallHealth::Off );
@@ -668,7 +668,7 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		EmitSound( "WallHealth.Start" );
 		m_flSoundTime = 0.56 + gpGlobals->curtime;
 
-		m_OnPlayerUse.FireOutput( pActivator, this );
+		m_OnPlayerUse.FireOutput( pPlayer, this );
 	}
 	if ((m_iOn == 1) && (m_flSoundTime <= gpGlobals->curtime))
 	{
@@ -679,14 +679,14 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	}
 
 	// charge the player
-	if ( pActivator->TakeHealth( 1, DMG_GENERIC ) )
+	if ( pPlayer->TakeHealth( 1, DMG_GENERIC ) )
 	{
 		m_iJuice--;
 	}
 
 	// Send the output.
 	float flRemaining = m_iJuice / sk_healthcharger.GetFloat();
-	m_OutRemainingHealth.Set(flRemaining, pActivator, this);
+	m_OutRemainingHealth.Set(flRemaining, pPlayer, this);
 
 	// govern the rate of charge
 	m_flNextCharge = gpGlobals->curtime + 0.1;

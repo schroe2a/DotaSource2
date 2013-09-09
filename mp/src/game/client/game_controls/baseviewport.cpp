@@ -35,6 +35,10 @@
 #include "clientscoreboarddialog.h"
 #include "spectatorgui.h"
 #include "teammenu.h"
+#include "classmenu.h"
+#include "skillmenu.h"
+#include "buymenu.h"
+#include "hl2mp_gamerules.h"
 #include "vguitextwindow.h"
 #include "IGameUIFuncs.h"
 #include "mapoverview.h"
@@ -48,6 +52,8 @@
 #include <convar.h>
 #include "ienginevgui.h"
 #include "iclientmode.h"
+
+#include "c_hl2mp_player.h"
 
 #include "tier0/etwprof.h"
 
@@ -89,6 +95,50 @@ CON_COMMAND( hidepanel, "Hides a viewport panel <name>" )
 		return;
 		
 	 gViewPortInterface->ShowPanel( args[ 1 ], false );
+}
+
+CON_COMMAND( chooseteam, "Opens a menu for teamchoose" )
+{
+	 if ( !gViewPortInterface )
+		return;
+	 gViewPortInterface->ShowPanel( "team", true );
+}
+
+CON_COMMAND( skillmenu, "Opens a menu for skills" )
+{
+	if ( !gViewPortInterface )
+		return;
+
+	CHL2MP_Player * player = CHL2MP_Player::GetLocalHL2MPPlayer();
+
+	if ( player )
+	{
+		KeyValues *data = player->GetSkillData();
+		gViewPortInterface->FindPanelByName("skill")->SetData( data );
+		data->deleteThis();
+
+		gViewPortInterface->ShowPanel( "skill", true );
+	}
+}
+
+CON_COMMAND( buymenu, "Opens a menu for buying" )
+{
+	if ( !gViewPortInterface )
+		return;
+
+	CHL2MP_Player * player = CHL2MP_Player::GetLocalHL2MPPlayer();
+
+	if ( player )
+	{
+		if ( player->GetCanShop() )
+		{
+			KeyValues *data = player->GetBuyData();
+			gViewPortInterface->FindPanelByName("buy")->SetData( data );
+			data->deleteThis();
+
+			gViewPortInterface->ShowPanel( "buy", true );
+		}
+	}
 }
 
 /* global helper functions
@@ -231,9 +281,11 @@ void CBaseViewport::CreateDefaultPanels( void )
 	AddNewPanel( CreatePanelByName( PANEL_SPECGUI ), "PANEL_SPECGUI" );
 	AddNewPanel( CreatePanelByName( PANEL_SPECMENU ), "PANEL_SPECMENU" );
 	AddNewPanel( CreatePanelByName( PANEL_NAV_PROGRESS ), "PANEL_NAV_PROGRESS" );
-	// AddNewPanel( CreatePanelByName( PANEL_TEAM ), "PANEL_TEAM" );
-	// AddNewPanel( CreatePanelByName( PANEL_CLASS ), "PANEL_CLASS" );
-	// AddNewPanel( CreatePanelByName( PANEL_BUY ), "PANEL_BUY" );
+	AddNewPanel( CreatePanelByName( PANEL_TEAM ), "PANEL_TEAM" );
+	AddNewPanel( CreatePanelByName( PANEL_COM_CLASS ), "PANEL_COM_CLASS" );
+	AddNewPanel( CreatePanelByName( PANEL_REB_CLASS ), "PANEL_REB_CLASS" );
+	AddNewPanel( CreatePanelByName( PANEL_SKILL ), "PANEL_SKILL" );
+	AddNewPanel( CreatePanelByName( PANEL_BUY ), "PANEL_BUY" );
 #endif
 }
 
@@ -288,6 +340,22 @@ IViewPortPanel* CBaseViewport::CreatePanelByName(const char *szPanelName)
 		newpanel = new CNavProgress( this );
 	}
 #endif	// TF_CLIENT_DLL
+	else if ( Q_strcmp(PANEL_COM_CLASS, szPanelName) == 0 )
+	{
+		newpanel = new CClassMenu( this, TEAM_COMBINE );
+	}
+	else if ( Q_strcmp(PANEL_REB_CLASS, szPanelName) == 0 )
+	{
+		newpanel = new CClassMenu( this, TEAM_REBELS );
+	}
+	else if ( Q_strcmp(PANEL_SKILL, szPanelName) == 0 )
+	{
+		newpanel = new CSkillMenu( this );
+	}
+	else if ( Q_strcmp(PANEL_BUY, szPanelName) == 0 )
+	{
+		newpanel = new CBuyMenu( this );
+	}
 #endif
 
 	if ( Q_strcmp(PANEL_COMMENTARY_MODELVIEWER, szPanelName) == 0 )

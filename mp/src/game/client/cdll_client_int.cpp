@@ -935,6 +935,9 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	if (!g_pMatSystemSurface)
 		return false;
 
+	filesystem->AddSearchPath("hl2mp", "GAME", PATH_ADD_TO_TAIL);
+	filesystem->MountSteamContent(-320);
+
 #ifdef WORKSHOP_IMPORT_ENABLED
 	if ( !ConnectDataModel( appSystemFactory ) )
 		return false;

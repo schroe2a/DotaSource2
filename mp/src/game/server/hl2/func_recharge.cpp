@@ -15,7 +15,7 @@
 
 #include "cbase.h"
 #include "gamerules.h"
-#include "player.h"
+#include "hl2mp_player.h"
 #include "engine/IEngineSound.h"
 #include "in_buttons.h"
 
@@ -593,7 +593,7 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	if ( !pActivator || !pActivator->IsPlayer() )
 		return;
 
-	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pActivator);
+	CHL2MP_Player *pPlayer = static_cast<CHL2MP_Player *>(pActivator);
 
 	// Reset to a state of continuous use.
 	m_iCaps = FCAP_CONTINUOUS_USE;
@@ -643,7 +643,7 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	}
 
 	// Get our maximum armor value
-	int nMaxArmor = 100;
+	int nMaxArmor = pPlayer->GetMaxHealth();
 	if ( HasSpawnFlags(	SF_CITADEL_RECHARGER ) )
 	{
 		nMaxArmor = sk_suitcharger_citadel_maxarmor.GetInt();

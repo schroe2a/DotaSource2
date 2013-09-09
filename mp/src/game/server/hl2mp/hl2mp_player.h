@@ -20,6 +20,8 @@ class CHL2MP_Player;
 #include "hl2mp_gamerules.h"
 #include "utldict.h"
 
+class CBaseSkill;
+
 //=============================================================================
 // >> HL2MP_Player
 //=============================================================================
@@ -59,12 +61,16 @@ public:
 	virtual void PlayerDeathThink( void );
 	virtual void SetAnimation( PLAYER_ANIM playerAnim );
 	virtual bool HandleCommand_JoinTeam( int team );
+	virtual bool HandleCommand_JoinClass( int hero );
+	CBaseSkill*  CreateSkillEntity( const char *pSkillEntityName );
+	virtual bool HandleCommand_UpgradeSkill( int iSkill );
+	virtual bool HandleCommand_Buy( int iItem );
 	virtual bool ClientCommand( const CCommand &args );
 	virtual void CreateViewModel( int viewmodelindex = 0 );
 	virtual bool BecomeRagdollOnClient( const Vector &force );
 	virtual void Event_Killed( const CTakeDamageInfo &info );
 	virtual int OnTakeDamage( const CTakeDamageInfo &inputInfo );
-	virtual bool WantsLagCompensationOnEntity( const CBasePlayer *pPlayer, const CUserCmd *pCmd, const CBitVec<MAX_EDICTS> *pEntityTransmitBits ) const;
+	virtual bool WantsLagCompensationOnEntity( const CBaseEntity *pPlayer, const CUserCmd *pCmd, const CBitVec<MAX_EDICTS> *pEntityTransmitBits ) const;
 	virtual void FireBullets ( const FireBulletsInfo_t &info );
 	virtual bool Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex = 0);
 	virtual bool BumpWeapon( CBaseCombatWeapon *pWeapon );
@@ -137,6 +143,44 @@ public:
 
 	virtual bool	CanHearAndReadChatFrom( CBasePlayer *pPlayer );
 
+	int GetXP() { return m_iExp; }
+	void AddXP(int add=1) 
+	{ 
+		m_iExp += add;
+		//ClientPrint( this, HUD_PRINTTALK, UTIL_VarArgs("Gained %i XP\n", add) ); 
+		CheckLevel(); 
+	}
+
+	int GetLevel() { return m_iLevel; }
+	void CheckLevel();
+	void OnStatsChanged();
+		
+	int GetHeroType();
+
+	int GetMoney() { return m_iMoney; }
+	void AddMoney(int add=1) { m_iMoney += add; }
+
+	void PlaySpawnSound( const char *pModelName );
+
+	virtual int	GetMaxHealth()  const;
+
+	bool GetCanShop() { return m_canShop > 0; }
+	void SetCanShop( bool canShop ) { m_canShop = canShop?1:0; }
+
+	CBaseSkill*  GetSkill(int index);
+
+	CNetworkVar(int, m_iHasPistol);
+	CNetworkVar(int, m_iHasSMG);
+	CNetworkVar(int, m_iHasAR2);
+	CNetworkVar(int, m_iHasBuckshot);
+	CNetworkVar(int, m_iHas357);
+	CNetworkVar(int, m_iHasXBow);
+	CNetworkVar(int, m_iHasPhysCannon);
+
+	virtual void		Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+
+	int GetWeaponLevel( const char *pszWeapon );
+	void SetWeaponLevel( const char *pszWeapon, int level );
 		
 private:
 
@@ -144,7 +188,6 @@ private:
 	CPlayerAnimState   m_PlayerAnimState;
 
 	int m_iLastWeaponFireUsercmd;
-	int m_iModelType;
 	CNetworkVar( int, m_iSpawnInterpCounter );
 	CNetworkVar( int, m_iPlayerSoundType );
 
@@ -163,6 +206,27 @@ private:
 
     bool m_bEnterObserver;
 	bool m_bReady;
+
+	float m_nextRegen;
+
+	CNetworkVar(int, m_iExp);
+	CNetworkVar(int, m_iLevel);
+
+	CNetworkVar(int, m_HeroType);
+
+	CNetworkVar(int, m_iSkillPoints);
+	CNetworkVar(int, m_iStatLevel);
+
+	CNetworkVar(int, m_iMoney);
+
+	CNetworkVar(int, m_canShop);
+
+	CNetworkHandle( CBaseEntity, m_hSkill1 );
+	CNetworkHandle( CBaseEntity, m_hSkill2 );
+	CNetworkHandle( CBaseEntity, m_hSkill3 );
+	CNetworkHandle( CBaseEntity, m_hSkill4 );
+
+	void CreateSkills( int hero );
 };
 
 inline CHL2MP_Player *ToHL2MPPlayer( CBaseEntity *pEntity )

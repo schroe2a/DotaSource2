@@ -47,7 +47,7 @@
 #include "weapon_physcannon.h"
 #include "ammodef.h"
 #include "vehicle_base.h"
- 
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -1747,7 +1747,8 @@ void CNPC_BaseZombie::StartTouch( CBaseEntity *pOther )
 //---------------------------------------------------------
 bool CNPC_BaseZombie::CreateBehaviors()
 {
-	AddBehavior( &m_ActBusyBehavior );
+	//AddBehavior( &m_ActBusyBehavior );
+	AddBehavior( &m_FollowBehavior );
 
 	return BaseClass::CreateBehaviors();
 }
@@ -2716,6 +2717,8 @@ void CNPC_BaseZombie::TranslateNavGoal( CBaseEntity *pEnemy, Vector &chasePositi
 //-----------------------------------------------------------------------------
 
 AI_BEGIN_CUSTOM_NPC( base_zombie, CNPC_BaseZombie )
+
+	DECLARE_USES_SCHEDULE_PROVIDER( CAI_FollowBehavior )
 
 	DECLARE_TASK( TASK_ZOMBIE_DELAY_SWAT )
 	DECLARE_TASK( TASK_ZOMBIE_SWAT_ITEM )

@@ -21,6 +21,7 @@ ipch
 *.sln
 *.vpc_crc
 *.filters
+*.unsuccessfulbuild
 
 # OSX/Linux build products
 *.mak
@@ -89,3 +90,8 @@ mp/src/utils/serverplugin_sample/debug
 mp/src/vgui2/vgui_controls/generated_proto
 
 mp/src/lib/public/*.lib
+
+mp/src/game/client/debug_hl2mp
+mp/src/game/client/release_hl2mp
+mp/src/game/server/debug_hl2mp
+mp/src/game/server/release_hl2mp

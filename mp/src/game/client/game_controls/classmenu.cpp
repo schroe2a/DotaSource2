@@ -49,11 +49,11 @@ ConVar hud_classautokill( "hud_classautokill", "1", HUD_CLASSAUTOKILL_FLAGS, "Au
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CClassMenu::CClassMenu(IViewPort *pViewPort) : Frame(NULL, PANEL_CLASS)
+CClassMenu::CClassMenu(IViewPort *pViewPort, int team) : Frame(NULL, PANEL_REB_CLASS)
 {
 	m_pViewPort = pViewPort;
 	m_iScoreBoardKey = BUTTON_CODE_INVALID; // this is looked up in Activate()
-	m_iTeam = 0;
+	m_iTeam = team;
 
 	// initialize dialog
 	SetTitle("", true);
@@ -70,7 +70,14 @@ CClassMenu::CClassMenu(IViewPort *pViewPort) : Frame(NULL, PANEL_CLASS)
 	// info window about this class
 	m_pPanel = new EditablePanel( this, "ClassInfo" );
 
-	LoadControlSettings( "Resource/UI/ClassMenu.res" );
+	if ( team == 2 )
+	{
+		LoadControlSettings( "Resource/UI/ClassMenu_com.res" );
+	}
+	else if ( team == 3 )
+	{
+		LoadControlSettings( "Resource/UI/ClassMenu_reb.res" );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -122,6 +129,10 @@ Panel *CClassMenu::CreateControlByName(const char *controlName)
 		m_mouseoverButtons.AddToTail( newButton );
 		return newButton;
 	}
+	else if ( Q_stricmp( controlName, "ClassImagePanel" ) == 0 )
+    {
+        return new CClassImagePanel( NULL, controlName );		
+    }
 	else
 	{
 		return BaseClass::CreateControlByName( controlName );

@@ -180,6 +180,8 @@ public:
 	static float	fMaxTipControllerVelocity;
 	static float	fMaxTipControllerAngularVelocity;
 
+	Disposition_t IRelationType ( CBaseEntity *pTarget );
+
 protected:
 
 	virtual bool	PreThink( turretState_e state );

@@ -447,7 +447,7 @@ void CSoundEnt::InsertSound ( int iType, const Vector &vecOrigin, int iVolume, f
 
 	if ( iThisSound == SOUNDLIST_EMPTY )
 	{
-		DevMsg( "Could not AllocSound() for InsertSound() (Game DLL)\n" );
+		//DevMsg( "Could not AllocSound() for InsertSound() (Game DLL)\n" );
 		return;
 	}
 

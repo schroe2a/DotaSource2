@@ -105,17 +105,24 @@ int	CAmmoDef::MaxCarry(int nAmmoIndex)
 	if ( nAmmoIndex < 1 || nAmmoIndex >= m_nAmmoIndex )
 		return 0;
 
+	int maxCarry = 0;
+
 	if ( m_AmmoType[nAmmoIndex].pMaxCarry == USE_CVAR )
 	{
 		if ( m_AmmoType[nAmmoIndex].pMaxCarryCVar )
-			return m_AmmoType[nAmmoIndex].pMaxCarryCVar->GetFloat();
+			maxCarry =  m_AmmoType[nAmmoIndex].pMaxCarryCVar->GetFloat();
 
 		return 0;
 	}
 	else
 	{
-		return m_AmmoType[nAmmoIndex].pMaxCarry;
+		maxCarry =  m_AmmoType[nAmmoIndex].pMaxCarry;
 	}
+
+	if ( (maxCarry % 4) != 0 )
+		maxCarry += 4 - (maxCarry % 4);
+
+	return maxCarry;
 }
 
 //-----------------------------------------------------------------------------

@@ -35,11 +35,11 @@ private:
 	DECLARE_CLASS_SIMPLE( CClassMenu, vgui::Frame );
 
 public:
-	CClassMenu(IViewPort *pViewPort);
+	CClassMenu(IViewPort *pViewPort, int team);
 	CClassMenu(IViewPort *pViewPort, const char *panelName );
 	virtual ~CClassMenu();
 
-	virtual const char *GetName( void ) { return PANEL_CLASS; }
+	virtual const char *GetName( void ) { if ( m_iTeam ==2 ) return PANEL_COM_CLASS; else return PANEL_REB_CLASS; }
 	virtual void SetData(KeyValues *data);
 	virtual void Reset();
 	virtual void Update() {};

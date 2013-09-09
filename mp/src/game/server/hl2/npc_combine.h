@@ -104,7 +104,7 @@ public:
 	virtual int		SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
 	int				SelectScheduleAttack();
 
-	bool			CreateBehaviors();
+	virtual bool	CreateBehaviors();
 
 	bool			OnBeginMoveAndShoot();
 	void			OnEndMoveAndShoot();
@@ -255,17 +255,21 @@ private:
 	virtual bool IsWaitingToRappel( void ) { return m_RappelBehavior.IsWaitingToRappel(); }
 	void BeginRappel() { m_RappelBehavior.BeginRappel(); }
 
+	int SpeakOrTalk( const char *pSentence, SentencePriority_t nSoundPriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t nCriteria = SENTENCE_CRITERIA_IN_SQUAD  );
+
+public:
+	EHANDLE			m_hForcedGrenadeTarget;
+	float			m_flNextGrenadeCheck;	
+	
 private:
 	int				m_nKickDamage;
 	Vector			m_vecTossVelocity;
-	EHANDLE			m_hForcedGrenadeTarget;
 	bool			m_bShouldPatrol;
 	bool			m_bFirstEncounter;// only put on the handsign show in the squad's first encounter.
 
 	// Time Variables
 	float			m_flNextPainSoundTime;
 	float			m_flNextAlertSoundTime;
-	float			m_flNextGrenadeCheck;	
 	float			m_flNextLostSoundTime;
 	float			m_flAlertPatrolTime;		// When to stop doing alert patrol
 	float			m_flNextAltFireTime;		// Elites only. Next time to begin considering alt-fire attack.
@@ -276,7 +280,10 @@ private:
 
 	CAI_Sentence< CNPC_Combine > m_Sentences;
 
+protected:
 	int			m_iNumGrenades;
+
+private:
 	CAI_AssaultBehavior			m_AssaultBehavior;
 	CCombineStandoffBehavior	m_StandoffBehavior;
 	CAI_FollowBehavior			m_FollowBehavior;

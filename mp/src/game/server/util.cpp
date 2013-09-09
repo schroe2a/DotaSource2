@@ -619,21 +619,63 @@ CBasePlayer* UTIL_PlayerByUserId( int userID )
 // 
 CBasePlayer *UTIL_GetLocalPlayer( void )
 {
-	if ( gpGlobals->maxClients > 1 )
-	{
-		if ( developer.GetBool() )
-		{
-			Assert( !"UTIL_GetLocalPlayer" );
-			
-#ifdef	DEBUG
-			Warning( "UTIL_GetLocalPlayer() called in multiplayer game.\n" );
-#endif
-		}
+	// first try getting the host, failing that, get *ANY* player
+	CBasePlayer *pHost = UTIL_GetListenServerHost();
+	if ( pHost )
+		return pHost;
 
-		return NULL;
+	for (int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+		if ( pPlayer )
+			return pPlayer;
 	}
 
-	return UTIL_PlayerByIndex( 1 );
+	return NULL;
+}
+
+CBasePlayer *UTIL_GetNearestPlayer( const Vector &origin )
+{
+	float distToNearest = 0.0f;
+	CBasePlayer *pNearest = NULL;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+		if ( !pPlayer )
+			continue;
+
+		float flDist = (pPlayer->GetAbsOrigin() - origin).LengthSqr();
+		if ( distToNearest == 0.0f || flDist < distToNearest )
+		{
+			pNearest = pPlayer;
+			distToNearest = flDist;
+		}
+	}
+
+	return pNearest;
+}
+
+CBasePlayer *UTIL_GetNearestVisiblePlayer( CBaseEntity *pLooker, int mask )
+{
+	float distToNearest = 0.0f;
+	CBasePlayer *pNearest = NULL;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+		if ( !pPlayer )
+			continue;
+
+		float flDist = (pPlayer->GetAbsOrigin() - pLooker->GetAbsOrigin()).LengthSqr();
+		if ( distToNearest == 0.0f || ( flDist < distToNearest && pLooker->FVisible( pPlayer, mask ) ) )
+		{
+			pNearest = pPlayer;
+			distToNearest = flDist;
+		}
+	}
+
+	return pNearest;
 }
 
 //
@@ -644,8 +686,8 @@ CBasePlayer *UTIL_GetListenServerHost( void )
 	// no "local player" if this is a dedicated server or a single player game
 	if (engine->IsDedicatedServer())
 	{
-		Assert( !"UTIL_GetListenServerHost" );
-		Warning( "UTIL_GetListenServerHost() called from a dedicated server or single-player game.\n" );
+//		Assert( !"UTIL_GetListenServerHost" );
+//		Warning( "UTIL_GetListenServerHost() called from a dedicated server or single-player game.\n" );
 		return NULL;
 	}
 
@@ -3285,6 +3327,7 @@ void CC_CollisionTest( const CCommand &args )
 #endif
 }
 static ConCommand collision_test("collision_test", CC_CollisionTest, "Tests collision system", FCVAR_CHEAT );
+
 
 
 

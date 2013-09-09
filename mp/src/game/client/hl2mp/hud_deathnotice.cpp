@@ -292,7 +292,14 @@ void CHudDeathNotice::FireGameEvent( IGameEvent * event )
 	}
 
 	// Get the names of the players
-	const char *killer_name = g_PR->GetPlayerName( killer );
+	const char *killer_name;
+	if ( killer )
+		killer_name = g_PR->GetPlayerName( killer );
+	else
+	{
+		killer_name = fullkilledwith + 6;
+		killer = victim;
+	}
 	const char *victim_name = g_PR->GetPlayerName( victim );
 
 	if ( !killer_name )
@@ -307,7 +314,10 @@ void CHudDeathNotice::FireGameEvent( IGameEvent * event )
 	Q_strncpy( deathMsg.Killer.szName, killer_name, MAX_PLAYER_NAME_LENGTH );
 	Q_strncpy( deathMsg.Victim.szName, victim_name, MAX_PLAYER_NAME_LENGTH );
 	deathMsg.flDisplayTime = gpGlobals->curtime + hud_deathnotice_time.GetFloat();
-	deathMsg.iSuicide = ( !killer || killer == victim );
+	if ( !strcmp( killer_name, "creep" ) )
+		deathMsg.iSuicide = false;
+	else
+		deathMsg.iSuicide = ( !killer || killer == victim );
 
 	// Try and find the death identifier in the icon list
 	deathMsg.iconDeath = gHUD.GetIcon( fullkilledwith );

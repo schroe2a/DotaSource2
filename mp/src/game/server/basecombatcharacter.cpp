@@ -37,6 +37,8 @@
 #include "RagdollBoogie.h"
 #include "rumble_shared.h"
 #include "saverestoretypes.h"
+#include "hl2mp_player.h"
+#include "skills.h"
 #include "nav_mesh.h"
 
 #ifdef NEXT_BOT
@@ -1599,7 +1601,7 @@ void CBaseCombatCharacter::Event_Killed( const CTakeDamageInfo &info )
 	CBaseCombatWeapon *pDroppedWeapon = m_hActiveWeapon.Get();
 
 	// Drop any weapon that I own
-	if ( VPhysicsGetObject() )
+	/*if ( VPhysicsGetObject() )
 	{
 		Vector weaponForce = forceVector * VPhysicsGetObject()->GetInvMass();
 		Weapon_Drop( m_hActiveWeapon, NULL, &weaponForce );
@@ -1607,7 +1609,7 @@ void CBaseCombatCharacter::Event_Killed( const CTakeDamageInfo &info )
 	else
 	{
 		Weapon_Drop( m_hActiveWeapon );
-	}
+	}*/
 	
 	// if flagged to drop a health kit
 	if (HasSpawnFlags(SF_NPC_DROP_HEALTHKIT))
@@ -1620,8 +1622,12 @@ void CBaseCombatCharacter::Event_Killed( const CTakeDamageInfo &info )
 	// Tell my killer that he got me!
 	if( info.GetAttacker() )
 	{
-		info.GetAttacker()->Event_KilledOther(this, info);
-		g_EventQueue.AddEvent( info.GetAttacker(), "KilledNPC", 0.3, this, this );
+		CBaseEntity *pAttacker = info.GetAttacker();
+		while ( pAttacker->GetOwnerEntity() )
+			pAttacker = pAttacker->GetOwnerEntity();
+		
+		pAttacker->Event_KilledOther(this, info);
+		g_EventQueue.AddEvent( pAttacker, "KilledNPC", 0.3, this, this );
 	}
 	SendOnKilledGameEvent( info );
 
@@ -1916,7 +1922,7 @@ void CBaseCombatCharacter::Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector
 			{
 				// Drop enough ammo to kill 2 of me.
 				// Figure out how much damage one piece of this type of ammo does to this type of enemy.
-				float flAmmoDamage = g_pGameRules->GetAmmoDamage( UTIL_PlayerByIndex(1), this, pWeapon->GetPrimaryAmmoType() );
+				float flAmmoDamage = g_pGameRules->GetAmmoDamage( UTIL_GetNearestPlayer(GetAbsOrigin()), this, pWeapon->GetPrimaryAmmoType() );
 				pWeapon->m_iClip1 = (GetMaxHealth() / flAmmoDamage) * 2;
 			}
 		}
@@ -2087,43 +2093,43 @@ void CBaseCombatCharacter::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 	//  Give Primary Ammo
 	// ----------------------
 	// If gun doesn't use clips, just give ammo
-	if (pWeapon->GetMaxClip1() == -1)
-	{
-#ifdef HL2_DLL
-		if( FStrEq(STRING(gpGlobals->mapname), "d3_c17_09") && FClassnameIs(pWeapon, "weapon_rpg") && pWeapon->NameMatches("player_spawn_items") )
-		{
-			// !!!HACK - Don't give any ammo with the spawn equipment RPG in d3_c17_09. This is a chapter
-			// start and the map is way to easy if you start with 3 RPG rounds. It's fine if a player conserves
-			// them and uses them here, but it's not OK to start with enough ammo to bypass the snipers completely.
-			GiveAmmo( 0, pWeapon->m_iPrimaryAmmoType); 
-		}
-		else
-#endif // HL2_DLL
-		GiveAmmo(pWeapon->GetDefaultClip1(), pWeapon->m_iPrimaryAmmoType); 
-	}
-	// If default ammo given is greater than clip
-	// size, fill clips and give extra ammo
-	else if (pWeapon->GetDefaultClip1() >  pWeapon->GetMaxClip1() )
-	{
-		pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
-		GiveAmmo( (pWeapon->GetDefaultClip1() - pWeapon->GetMaxClip1()), pWeapon->m_iPrimaryAmmoType); 
-	}
-
-	// ----------------------
-	//  Give Secondary Ammo
-	// ----------------------
-	// If gun doesn't use clips, just give ammo
-	if (pWeapon->GetMaxClip2() == -1)
-	{
-		GiveAmmo(pWeapon->GetDefaultClip2(), pWeapon->m_iSecondaryAmmoType); 
-	}
-	// If default ammo given is greater than clip
-	// size, fill clips and give extra ammo
-	else if ( pWeapon->GetDefaultClip2() > pWeapon->GetMaxClip2() )
-	{
-		pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
-		GiveAmmo( (pWeapon->GetDefaultClip2() - pWeapon->GetMaxClip2()), pWeapon->m_iSecondaryAmmoType); 
-	}
+	//if (pWeapon->GetMaxClip1() == -1)
+//	{
+//#ifdef HL2_DLL
+//		if( FStrEq(STRING(gpGlobals->mapname), "d3_c17_09") && FClassnameIs(pWeapon, "weapon_rpg") && pWeapon->NameMatches("player_spawn_items") )
+//		{
+//			// !!!HACK - Don't give any ammo with the spawn equipment RPG in d3_c17_09. This is a chapter
+//			// start and the map is way to easy if you start with 3 RPG rounds. It's fine if a player conserves
+//			// them and uses them here, but it's not OK to start with enough ammo to bypass the snipers completely.
+//			GiveAmmo( 0, pWeapon->m_iPrimaryAmmoType); 
+//		}
+//		else
+//#endif // HL2_DLL
+//		GiveAmmo(1, pWeapon->m_iPrimaryAmmoType); 
+//	}
+//	// If default ammo given is greater than clip
+//	// size, fill clips and give extra ammo
+//	else if (pWeapon->GetDefaultClip1() >  pWeapon->GetMaxClip1() )
+//	{
+//		pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
+//		GiveAmmo( 1, pWeapon->m_iPrimaryAmmoType); 
+//	}
+//
+//	// ----------------------
+//	//  Give Secondary Ammo
+//	// ----------------------
+//	// If gun doesn't use clips, just give ammo
+//	if (pWeapon->GetMaxClip2() == -1)
+//	{
+//		GiveAmmo(1, pWeapon->m_iSecondaryAmmoType); 
+//	}
+//	// If default ammo given is greater than clip
+//	// size, fill clips and give extra ammo
+//	else if ( pWeapon->GetDefaultClip2() > pWeapon->GetMaxClip2() )
+//	{
+//		pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+//		GiveAmmo( 1, pWeapon->m_iSecondaryAmmoType); 
+//	}
 
 	pWeapon->Equip( this );
 
@@ -2172,6 +2178,8 @@ void CBaseCombatCharacter::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 //-----------------------------------------------------------------------------
 bool CBaseCombatCharacter::Weapon_EquipAmmoOnly( CBaseCombatWeapon *pWeapon )
 {
+	return false;
+
 	// Check for duplicates
 	for (int i=0;i<MAX_WEAPONS;i++) 
 	{
@@ -2388,6 +2396,20 @@ int CBaseCombatCharacter::OnTakeDamage( const CTakeDamageInfo &info )
 		UTIL_Smoke( info.GetDamagePosition(), random->RandomInt( 10, 15 ), 10 );
 	}
 
+	CTakeDamageInfo modifiedDamage = info;
+	
+	CHL2MP_Player * attacker = dynamic_cast<CHL2MP_Player*>( modifiedDamage.GetAttacker() );
+	if ( attacker )
+	{
+		for ( int i = 1; i<=4; i++ )
+		{
+			if (attacker->GetSkill(i))
+			{
+				attacker->GetSkill(i)->OnDoingDamage( modifiedDamage, this );
+			}
+		}
+	}
+
 	// track damage history
 	if ( info.GetAttacker() )
 	{
@@ -2417,7 +2439,7 @@ int CBaseCombatCharacter::OnTakeDamage( const CTakeDamageInfo &info )
 	switch( m_lifeState )
 	{
 	case LIFE_ALIVE:
-		retVal = OnTakeDamage_Alive( info );
+		retVal = OnTakeDamage_Alive( modifiedDamage );
 		if ( m_iHealth <= 0 )
 		{
 			IPhysicsObject *pPhysics = VPhysicsGetObject();
@@ -2428,12 +2450,12 @@ int CBaseCombatCharacter::OnTakeDamage( const CTakeDamageInfo &info )
 			
 			bool bGibbed = false;
 
-			Event_Killed( info );
+			Event_Killed( modifiedDamage );
 
 			// Only classes that specifically request it are gibbed
-			if ( ShouldGib( info ) )
+			if ( ShouldGib( modifiedDamage ) )
 			{
-				bGibbed = Event_Gibbed( info );
+				bGibbed = Event_Gibbed( modifiedDamage );
 			}
 			
 			if ( bGibbed == false )
@@ -2445,14 +2467,14 @@ int CBaseCombatCharacter::OnTakeDamage( const CTakeDamageInfo &info )
 		break;
 
 	case LIFE_DYING:
-		return OnTakeDamage_Dying( info );
+		return OnTakeDamage_Dying( modifiedDamage );
 	
 	default:
 	case LIFE_DEAD:
-		retVal = OnTakeDamage_Dead( info );
-		if ( m_iHealth <= 0 && g_pGameRules->Damage_ShouldGibCorpse( info.GetDamageType() ) && ShouldGib( info ) )
+		retVal = OnTakeDamage_Dead( modifiedDamage );
+		if ( m_iHealth <= 0 && g_pGameRules->Damage_ShouldGibCorpse( modifiedDamage.GetDamageType() ) && ShouldGib( modifiedDamage ) )
 		{
-			Event_Gibbed( info );
+			Event_Gibbed( modifiedDamage );
 			retVal = 0;
 		}
 		return retVal;
@@ -2745,7 +2767,20 @@ Relationship_t *CBaseCombatCharacter::FindEntityRelationship( CBaseEntity *pTarg
 Disposition_t CBaseCombatCharacter::IRelationType ( CBaseEntity *pTarget )
 {
 	if ( pTarget )
-		return FindEntityRelationship( pTarget )->disposition;
+	{
+		if ( pTarget->IsInAnyTeam() && this->IsInAnyTeam() )
+		{
+			if ( this->InSameTeam( pTarget ) )
+				return D_LI;
+			else
+				return D_HT;
+		}
+		else
+		{
+			return FindEntityRelationship( pTarget )->disposition;
+		}
+	}
+
 	return D_NU;
 }
 
@@ -3274,7 +3309,7 @@ CBaseEntity *CBaseCombatCharacter::FindMissTarget( void )
 	CBaseEntity *pMissCandidates[ MAX_MISS_CANDIDATES ];
 	int numMissCandidates = 0;
 
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
 	CBaseEntity *pEnts[256];
 	Vector		radius( 100, 100, 100);
 	Vector		vecSource = GetAbsOrigin();

@@ -6,6 +6,8 @@
 
 #include "cbase.h"
 
+#include "Skills.h"
+
 #include "ai_basenpc.h"
 #include "fmtstr.h"
 #include "activitylist.h"
@@ -70,6 +72,7 @@
 #include "checksum_crc.h"
 #include "iservervehicle.h"
 #include "filters.h"
+#include "hl2mp_player.h"
 #ifdef HL2_DLL
 #include "npc_bullseye.h"
 #include "hl2_player.h"
@@ -86,6 +89,9 @@
 #include "death_pose.h"
 #include "datacache/imdlcache.h"
 #include "vstdlib/jobthread.h"
+#include "ilagcompensationmanager.h"
+
+#include "ItemMoney.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -254,9 +260,10 @@ int CAI_Manager::NumAIs()
 
 //-------------------------------------
 
-void CAI_Manager::AddAI( CAI_BaseNPC *pAI )
+int CAI_Manager::AddAI( CAI_BaseNPC *pAI )
 {
 	m_AIs.AddToTail( pAI );
+	return NumAIs()-1; // return the index it was added to
 }
 
 //-------------------------------------
@@ -634,6 +641,19 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 			RemoveDeferred();
 		}
 	}
+
+	CBaseEntity * attacker = info.GetAttacker();
+	if ( attacker )
+	{
+		HL2MPRules()->RewardXPinArea( m_iExpToGive, this->GetAbsOrigin(), attacker->GetAbsOrigin(), this->GetTeamNumber() );
+		
+		while ( attacker->GetOwnerEntity() )
+			attacker = attacker->GetOwnerEntity();
+
+		CHL2MP_Player * killingPlayer = ToHL2MPPlayer( attacker );
+		if ( killingPlayer )
+			DropMoney( this->GetAbsOrigin(), m_iMoneyToGive, killingPlayer );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -642,7 +662,7 @@ void CAI_BaseNPC::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bo
 {
 	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
 
-#ifdef HL2_EPISODIC
+/*#ifdef HL2_EPISODIC
 	CBasePlayer *pPlayer = AI_GetSinglePlayer();
 	if ( pPlayer->IRelationType( this ) != D_LI )
 	{
@@ -653,7 +673,7 @@ void CAI_BaseNPC::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bo
 			alyx->EnemyIgnited( this );
 		}
 	}
-#endif
+#endif*/
 }
 
 //-----------------------------------------------------------------------------
@@ -692,7 +712,7 @@ bool CAI_BaseNPC::PassesDamageFilter( const CTakeDamageInfo &info )
 			return false;
 		}
 	}
-	
+
 	if ( !BaseClass::PassesDamageFilter( info ) )
 	{
 		m_fNoDamageDecal = true;
@@ -777,9 +797,8 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		{
 			// See if the person that injured me is an NPC.
 			CAI_BaseNPC *pAttacker = dynamic_cast<CAI_BaseNPC *>( info.GetAttacker() );
-			CBasePlayer *pPlayer = AI_GetSinglePlayer();
 
-			if( pAttacker && pAttacker->IsAlive() && pPlayer )
+			if( pAttacker && pAttacker->IsAlive() && UTIL_GetNearestPlayer(GetAbsOrigin()) )
 			{
 				if( pAttacker->GetSquad() != NULL && pAttacker->IsInPlayerSquad() )
 				{
@@ -3110,7 +3129,7 @@ void CAI_BaseNPC::UpdateEfficiency( bool bInPVS )
 
 	//---------------------------------
 
-	CBasePlayer *pPlayer = AI_GetSinglePlayer(); 
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin()); 
 	static Vector vPlayerEyePosition;
 	static Vector vPlayerForward;
 	static int iPrevFrame = -1;
@@ -3354,7 +3373,7 @@ void CAI_BaseNPC::UpdateSleepState( bool bInPVS )
 {
 	if ( GetSleepState() > AISS_AWAKE )
 	{
-		CBasePlayer *pLocalPlayer = AI_GetSinglePlayer();
+		CBasePlayer *pLocalPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 		if ( !pLocalPlayer )
 		{
 			if ( gpGlobals->maxClients > 1 )
@@ -3554,7 +3573,7 @@ void CAI_BaseNPC::RebalanceThinks()
 
 		int i;
 
-		CBasePlayer *pPlayer = AI_GetSinglePlayer();
+		CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 		Vector vPlayerForward;
 		Vector vPlayerEyePosition;
 
@@ -3835,7 +3854,7 @@ void CAI_BaseNPC::SetPlayerAvoidState( void )
 
 		GetPlayerAvoidBounds( &vMins, &vMaxs );
 
-		CBasePlayer *pLocalPlayer = AI_GetSinglePlayer();
+		CBasePlayer *pLocalPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 
 		if ( pLocalPlayer )
 		{
@@ -4810,14 +4829,14 @@ void CAI_BaseNPC::RunAI( void )
 		}
 	}
 
-	if( ai_debug_loners.GetBool() && !IsInSquad() && AI_IsSinglePlayer() )
+	if( ai_debug_loners.GetBool() && !IsInSquad() )
 	{
 		Vector right;
 		Vector vecPoint;
 
 		vecPoint = EyePosition() + Vector( 0, 0, 12 );
 
-		UTIL_GetLocalPlayer()->GetVectors( NULL, &right, NULL );
+		UTIL_GetNearestPlayer(GetAbsOrigin())->GetVectors( NULL, &right, NULL );
 
 		NDebugOverlay::Line( vecPoint, vecPoint + Vector( 0, 0, 64 ), 255, 0, 0, false , 0.1 );
 		NDebugOverlay::Line( vecPoint, vecPoint + Vector( 0, 0, 32 ) + right * 32, 255, 0, 0, false , 0.1 );
@@ -8665,7 +8684,7 @@ void CAI_BaseNPC::DrawDebugGeometryOverlays(void)
 
 		info.SetDamage( m_iHealth );
 		info.SetAttacker( this );
-		info.SetInflictor( ( AI_IsSinglePlayer() ) ? (CBaseEntity *)AI_GetSinglePlayer() : (CBaseEntity *)this );
+		info.SetInflictor( (CBaseEntity *)this );
 		info.SetDamageType( DMG_GENERIC );
 
 		m_debugOverlays &= ~OVERLAY_NPC_KILL_BIT;
@@ -9334,6 +9353,7 @@ ConVar ai_think_limit_label( "ai_think_limit_label", "0", FCVAR_ARCHIVE );
 
 void CAI_BaseNPC::ReportOverThinkLimit( float time )
 {
+	/*
 	DevMsg( "%s thinking for %.02fms!!! (%s); r%.2f (c%.2f, pst%.2f, ms%.2f), p-r%.2f, m%.2f\n",
 		 GetDebugName(), time, GetCurSchedule()->GetName(),
 		 g_AIRunTimer.GetDuration().GetMillisecondsF(),
@@ -9342,7 +9362,7 @@ void CAI_BaseNPC::ReportOverThinkLimit( float time )
 		 g_AIMaintainScheduleTimer.GetDuration().GetMillisecondsF(),
 		 g_AIPostRunTimer.GetDuration().GetMillisecondsF(),
 		 g_AIMoveTimer.GetDuration().GetMillisecondsF() );
-
+*/
 	if (ai_think_limit_label.GetBool()) 
 	{
 		Vector tmp;
@@ -9896,7 +9916,7 @@ CBaseEntity *CAI_BaseNPC::FindNamedEntity( const char *name, IEntityFindFilter *
 {
 	if ( !stricmp( name, "!player" ))
 	{
-		return ( CBaseEntity * )AI_GetSinglePlayer();
+		return UTIL_GetNearestPlayer(GetAbsOrigin());
 	}
 	else if ( !stricmp( name, "!enemy" ) )
 	{
@@ -9911,7 +9931,7 @@ CBaseEntity *CAI_BaseNPC::FindNamedEntity( const char *name, IEntityFindFilter *
 	{
 		// FIXME: look at CBaseEntity *CNPCSimpleTalker::FindNearestFriend(bool fPlayer)
 		// punt for now
-		return ( CBaseEntity * )AI_GetSinglePlayer();
+		return UTIL_GetNearestPlayer(GetAbsOrigin());
 	}
 	else if (!stricmp( name, "self" ))
 	{
@@ -9931,7 +9951,7 @@ CBaseEntity *CAI_BaseNPC::FindNamedEntity( const char *name, IEntityFindFilter *
 		{
 			DevMsg( "ERROR: \"player\" is no longer used, use \"!player\" in vcd instead!\n" );
 		}
-		return ( CBaseEntity * )AI_GetSinglePlayer();
+		return UTIL_GetNearestPlayer(GetAbsOrigin());
 	}
 	else
 	{
@@ -11360,7 +11380,8 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 	m_interuptSchedule			= NULL;
 	m_nDebugPauseIndex			= 0;
 
-	g_AI_Manager.AddAI( this );
+	SetAIIndex( g_AI_Manager.AddAI( this ) );
+	lagcompensation->RemoveNpcData( GetAIIndex() ); // make sure we're not inheriting anyone else's data
 	
 	if ( g_AI_Manager.NumAIs() == 1 )
 	{
@@ -11374,6 +11395,9 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 	m_bInChoreo = true; // assume so until call to UpdateEfficiency()
 	
 	SetCollisionGroup( COLLISION_GROUP_NPC );
+
+	m_iMoneyToGive = 50;
+	m_iExpToGive = 100;
 }
 
 //-----------------------------------------------------------------------------
@@ -11384,6 +11408,9 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 CAI_BaseNPC::~CAI_BaseNPC(void)
 {
 	g_AI_Manager.RemoveAI( this );
+
+	// this should stop a crash occuring when our death immediately creates a new NPC (eg headcrab from zombie)
+	lagcompensation->RemoveNpcData( GetAIIndex() );
 
 	delete m_pLockedBestSound;
 
@@ -11904,7 +11931,7 @@ bool CAI_BaseNPC::CineCleanup()
 			{
 				SetLocalOrigin( origin );
 
-				int drop = UTIL_DropToFloor( this, MASK_NPCSOLID, UTIL_GetLocalPlayer() );
+				int drop = UTIL_DropToFloor( this, MASK_NPCSOLID, UTIL_GetNearestVisiblePlayer(this) );
 
 				// Origin in solid?  Set to org at the end of the sequence
 				if ( ( drop < 0 ) || sv_test_scripted_sequences.GetBool() )
@@ -11981,7 +12008,7 @@ void CAI_BaseNPC::Teleport( const Vector *newPosition, const QAngle *newAngles, 
 
 bool CAI_BaseNPC::FindSpotForNPCInRadius( Vector *pResult, const Vector &vStartPos, CAI_BaseNPC *pNPC, float radius, bool bOutOfPlayerViewcone )
 {
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(pNPC->GetAbsOrigin());
 	QAngle fan;
 
 	fan.x = 0;
@@ -12513,18 +12540,18 @@ void DevMsg( CAI_BaseNPC *pAI, const char *pszFormat, ... )
 
 bool CAI_BaseNPC::IsPlayerAlly( CBasePlayer *pPlayer )											
 { 
-	if ( pPlayer == NULL )
-	{
-		// in multiplayer mode we need a valid pPlayer 
-		// or override this virtual function
-		if ( !AI_IsSinglePlayer() )
-			return false;
+	if( pPlayer == NULL )
+		return false;
 
-		// NULL means single player mode
-		pPlayer = UTIL_GetLocalPlayer();
-	}
+	//I'm going to have a a "Player Ally" be the NPCs this player has summoned, not creeps or other players' guys.
+	CBaseEntity * owner = this;
+	while ( owner->GetOwnerEntity() )
+			owner = owner->GetOwnerEntity();
 
-	return ( !pPlayer || IRelationType( pPlayer ) == D_LI ); 
+	if( owner == pPlayer )
+		return true;
+
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -12815,7 +12842,7 @@ bool CAI_BaseNPC::FindNearestValidGoalPos( const Vector &vTestPoint, Vector *pRe
 
 	if ( vCandidate != vec3_invalid )
 	{
-		AI_Waypoint_t *pPathToPoint = GetPathfinder()->BuildRoute( GetAbsOrigin(), vCandidate, AI_GetSinglePlayer(), 5*12, NAV_NONE, true );
+		AI_Waypoint_t *pPathToPoint = GetPathfinder()->BuildRoute( GetAbsOrigin(), vCandidate, UTIL_GetNearestPlayer(GetAbsOrigin()), 5*12, NAV_NONE, true );
 		if ( pPathToPoint )
 		{
 			GetPathfinder()->UnlockRouteNodes( pPathToPoint );
@@ -14127,4 +14154,28 @@ void CAI_BaseNPC::DesireCrouch( void )
 bool CAI_BaseNPC::IsInChoreo() const
 {
 	return m_bInChoreo;
+}
+
+Disposition_t	CAI_BaseNPC::IRelationType ( CBaseEntity *pTarget )
+{
+	CHL2MP_Player * player = ToHL2MPPlayer( pTarget );
+
+	if ( player )
+	{
+		Disposition_t skillResult;
+		for ( int i = 1; i<=4; i++ )
+		{
+			if (player->GetSkill(i))
+			{
+				skillResult = player->GetSkill(i)->IRelationType( this );
+				if ( skillResult != D_NU )
+					return skillResult;
+			}
+		}
+	}
+
+	if( pTarget->ClassMatches( "npc_turret_ceiling" ) )
+		return D_LI;
+
+	return BaseClass::IRelationType( pTarget );
 }

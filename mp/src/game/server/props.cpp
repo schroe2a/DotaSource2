@@ -1179,6 +1179,20 @@ void CBreakableProp::Event_Killed( const CTakeDamageInfo &info )
 	BaseClass::Event_Killed( info );
 }
 
+void CBreakableProp::UpdateOnRemove( void )
+{
+	// tell owner ( if any ) that we're dead.This is mostly for NPCMaker functionality.
+	CBaseEntity *pOwner = GetOwnerEntity();
+	if ( pOwner )
+	{
+		pOwner->DeathNotice( this );
+		SetOwnerEntity( NULL );
+	}
+
+	// Chain at end to mimic destructor unwind order
+	BaseClass::UpdateOnRemove();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for breaking the breakable immediately.
 //-----------------------------------------------------------------------------

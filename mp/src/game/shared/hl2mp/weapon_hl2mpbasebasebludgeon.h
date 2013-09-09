@@ -53,6 +53,12 @@ public:
 
 	CBaseHL2MPBludgeonWeapon( const CBaseHL2MPBludgeonWeapon & );
 
+#ifndef CLIENT_DLL
+
+	virtual int CapabilitiesGet();
+
+#endif
+
 protected:
 	virtual	void	ImpactEffect( trace_t &trace );
 

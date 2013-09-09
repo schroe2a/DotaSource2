@@ -637,6 +637,9 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	if ( !soundemitterbase->Connect( appSystemFactory ) )
 		return false;
 
+	filesystem->AddSearchPath("hl2mp", "GAME", PATH_ADD_TO_TAIL);
+	filesystem->MountSteamContent(-320);
+
 	// cache the globals
 	gpGlobals = pGlobals;
 

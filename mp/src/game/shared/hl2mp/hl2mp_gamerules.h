@@ -21,6 +21,7 @@
 
 #ifndef CLIENT_DLL
 #include "hl2mp_player.h"
+#include "team.h"
 #endif
 
 #define VEC_CROUCH_TRACE_MIN	HL2MPRules()->GetHL2MPViewVectors()->m_vCrouchTraceMin
@@ -100,6 +101,8 @@ public:
 	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
 	virtual bool ClientCommand( CBaseEntity *pEdict, const CCommand &args );
 
+	virtual bool FPlayerCanRespawn( CBasePlayer *pPlayer );
+
 	virtual float FlWeaponRespawnTime( CBaseCombatWeapon *pWeapon );
 	virtual float FlWeaponTryRespawn( CBaseCombatWeapon *pWeapon );
 	virtual Vector VecWeaponRespawnSpot( CBaseCombatWeapon *pWeapon );
@@ -120,8 +123,18 @@ public:
 	void CleanUpMap();
 	void CheckRestartGame();
 	void RestartGame();
+
+	const char *GetSkillClassForHero( int heroType, int index );
+	const char *GetSkillName( const char * skillClass );
+	const char *GetSkillDesc( const char * skillClass );
+	int			GetSkillCooldown( const char * skillClass,  int level );
+	int			GetSkillDuration( const char * skillClass,  int level );
+	float		GetSkillFormula( const char * skillClass,  int level );
+	const char *GetSkillFormulaLabel( const char * skillClass,  int level );
 	
 #ifndef CLIENT_DLL
+	bool GameStarted();
+
 	virtual Vector VecItemRespawnSpot( CItem *pItem );
 	virtual QAngle VecItemRespawnAngles( CItem *pItem );
 	virtual float	FlItemRespawnTime( CItem *pItem );
@@ -134,6 +147,12 @@ public:
 	void    CheckChatForReadySignal( CHL2MP_Player *pPlayer, const char *chatmsg );
 	const char *GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer );
 
+	void InitDefaultAIRelationships( void );
+
+	virtual float FlHealthChargerRechargeTime( void );
+	virtual float FlHEVChargerRechargeTime( void );
+	virtual bool AllowDamage( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	virtual int	ItemShouldRespawn( CItem *pItem );
 #endif
 	virtual void ClientDisconnected( edict_t *pClient );
 
@@ -141,7 +160,7 @@ public:
 	bool IsIntermission( void );
 
 	void PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &info );
-
+	void RewardXPinArea( int xpReward, Vector location1, Vector location2, int victimsTeam );
 	
 	bool	IsTeamplay( void ) { return m_bTeamPlayEnabled;	}
 	void	CheckAllPlayersReady( void );

@@ -15,7 +15,8 @@
 #include "ai_blended_movement.h"
 #include "soundenvelope.h"
 #include "ai_behavior_actbusy.h"
-
+#include "ai_behavior_follow.h"
+ 
 #define ZOM_ATTN_FOOTSTEP ATTN_IDLE
 
 #define	ENVELOPE_CONTROLLER		(CSoundEnvelopeController::GetController())
@@ -238,7 +239,7 @@ public:
 
 public:
 	CAI_ActBusyBehavior		m_ActBusyBehavior;
-
+	CAI_FollowBehavior		m_FollowBehavior;
 
 
 protected:

@@ -122,7 +122,7 @@ void C_ColorCorrection::ClientThink()
 		return;
 	}
 
-	CBaseEntity *pPlayer = UTIL_PlayerByIndex(1);
+	CBaseEntity *pPlayer = C_BasePlayer::GetLocalPlayer();
 	if( !pPlayer )
 		return;
 
@@ -141,6 +141,7 @@ void C_ColorCorrection::ClientThink()
 
 	BaseClass::ClientThink();
 }
+
 
 
 

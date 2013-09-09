@@ -210,7 +210,6 @@ public:
 
 	void				SetLocatorTargetEntity( CBaseEntity *pEntity ) { m_hLocatorTargetEntity.Set( pEntity ); }
 
-	virtual int			GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound);
 	virtual bool		BumpWeapon( CBaseCombatWeapon *pWeapon );
 	
 	virtual bool		Weapon_CanUse( CBaseCombatWeapon *pWeapon );
@@ -283,6 +282,10 @@ public:
 
 	CSoundPatch *m_sndLeeches;
 	CSoundPatch *m_sndWaterSplashes;
+
+	CNetworkVar(float, maxWalkSpeed);
+	CNetworkVar(float, maxNormalSpeed);
+	CNetworkVar(float, maxSprintSpeed);
 
 protected:
 	virtual void		PreThink( void );

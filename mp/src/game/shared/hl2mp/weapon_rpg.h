@@ -37,6 +37,8 @@ class CMissile : public CBaseCombatCharacter
 	DECLARE_CLASS( CMissile, CBaseCombatCharacter );
 
 public:
+	static const int EXPLOSION_RADIUS = 200;
+	static const int EXPLOSION_DAMAGE = 200;
 	CMissile();
 	~CMissile();
 
@@ -70,6 +72,8 @@ public:
 
 	static CMissile *Create( const Vector &vecOrigin, const QAngle &vecAngles, edict_t *pentOwner );
 
+	void CreateDangerSounds( bool bState ){ m_bCreateDangerSounds = bState; }
+
 protected:
 	virtual void DoExplosion();	
 	virtual void ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActualDotPosition, float *pHomingSpeed );
@@ -86,8 +90,18 @@ protected:
 	float					m_flMarkDeadTime;
 	float					m_flDamage;
 
+	struct CustomDetonator_t
+	{
+		EHANDLE hEntity;
+		float radiusSq;
+		float halfHeight;
+	};
+
+	static CUtlVector<CustomDetonator_t> gm_CustomDetonators;
+
 private:
 	float					m_flGracePeriodEndsAt;
+	bool					m_bCreateDangerSounds;
 
 	DECLARE_DATADESC();
 };
@@ -124,6 +138,8 @@ public:
 
 	void	AimAtSpecificTarget( CBaseEntity *pTarget );
 	void	SetGuidanceHint( const char *pHintName );
+
+	void	APCSeekThink( void );
 
 	CAPCMissile			*m_pNext;
 
@@ -199,6 +215,13 @@ public:
 	float	GetMinRestTime() { return 4.0; }
 	float	GetMaxRestTime() { return 4.0; }
 
+#ifndef CLIENT_DLL
+	bool	WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
+	int		WeaponRangeAttack1Condition( float flDot, float flDist );
+
+	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+#endif
+
 	void	StartGuiding( void );
 	void	StopGuiding( void );
 	void	ToggleGuiding( void );
@@ -214,11 +237,19 @@ public:
 	void	UpdateLaserPosition( Vector vecMuzzlePos = vec3_origin, Vector vecEndPos = vec3_origin );
 	Vector	GetLaserPosition( void );
 
+#ifndef CLIENT_DLL
 	// NPC RPG users cheat and directly set the laser pointer's origin
 	void	UpdateNPCLaserPosition( const Vector &vecTarget );
 	void	SetNPCLaserPosition( const Vector &vecTarget );
 	const Vector &GetNPCLaserPosition( void );
-	
+
+	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+#endif
+	virtual const Vector& GetBulletSpread( void )
+	{
+		static Vector cone = VECTOR_CONE_3DEGREES;
+		return cone;
+	}
 #ifdef CLIENT_DLL
 
 	// We need to render opaque and translucent pieces

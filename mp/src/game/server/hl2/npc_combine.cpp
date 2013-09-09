@@ -29,6 +29,7 @@
 #include "weapon_physcannon.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "npc_headcrab.h"
+#include "hl2mp_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -285,6 +286,24 @@ void CNPC_Combine::Precache()
 	PrecacheScriptSound( "NPC_Combine.WeaponBash" );
 	PrecacheScriptSound( "Weapon_CombineGuard.Special1" );
 
+	PrecacheScriptSound( "npc_citizen.letsgo01" );
+	PrecacheScriptSound( "npc_citizen.evenodds" );
+	PrecacheScriptSound( "npc_citizen.watchout" );
+	PrecacheScriptSound( "npc_citizen.combine01" );
+	PrecacheScriptSound( "npc_citizen.gotone01" );
+	PrecacheScriptSound( "npc_citizen.gotone02" );
+	PrecacheScriptSound( "npc_citizen.coverwhilereload01" );
+	PrecacheScriptSound( "npc_citizen.watchout" );	
+	PrecacheScriptSound( "npc_citizen.watchout" );	
+	PrecacheScriptSound( "npc_citizen.ow01" );	
+	PrecacheScriptSound( "npc_citizen.imhurt02" );
+	PrecacheScriptSound( "npc_citizen.illstayhere01" );
+	PrecacheScriptSound( "npc_citizen.gordead_ques02" );
+	PrecacheScriptSound( "npc_citizen.die" );
+	PrecacheScriptSound( "npc_citizen.leadtheway02" );
+	PrecacheScriptSound( "npc_citizen.headsup2" );
+	PrecacheScriptSound( "npc_citizen.gordead_ques07" );
+	
 	BaseClass::Precache();
 }
 
@@ -756,7 +775,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 	case TASK_COMBINE_SIGNAL_BEST_SOUND:
 		if( IsInSquad() && GetSquad()->NumMembers() > 1 )
 		{
-			CBasePlayer *pPlayer = AI_GetSinglePlayer();
+			CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
 
 			if( pPlayer && OccupyStrategySlot( SQUAD_SLOT_EXCLUSIVE_HANDSIGN ) && pPlayer->FInViewCone( this ) )
 			{
@@ -780,12 +799,18 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 					if( DotProduct( right, tosound ) > 0 )
 					{
 						// Right
-						SetIdealActivity( ACT_SIGNAL_RIGHT );
+						if ( GetTeamNumber() == TEAM_COMBINE )
+							SetIdealActivity( ACT_SIGNAL_RIGHT );
+						else
+							SetIdealActivity( ACT_SIGNAL1 );
 					}
 					else
 					{
 						// Left
-						SetIdealActivity( ACT_SIGNAL_LEFT );
+						if ( GetTeamNumber() == TEAM_COMBINE )
+							SetIdealActivity( ACT_SIGNAL_LEFT );
+						else
+							SetIdealActivity( ACT_SIGNAL2 );
 					}
 
 					break;
@@ -813,7 +838,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				{
 					m_flLastAttackTime = gpGlobals->curtime;
 
-					m_Sentences.Speak( "COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH );
+					SpeakOrTalk( "COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH );
 
 					// Wait two seconds
 					SetWait( 2.0 );
@@ -837,7 +862,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			}
 			else
 			{
-				m_Sentences.Speak( "COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM );
+				SpeakOrTalk( "COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM );
 				SetActivity(ACT_IDLE);
 
 				// Wait two seconds
@@ -973,7 +998,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
 						}
 
-						m_Sentences.Speak( "COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID );
+						SpeakOrTalk( "COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID );
 						JustMadeSound( SENTENCE_PRIORITY_HIGH );
 					}
 					if ( pEntity->MyNPCPointer() )
@@ -1212,42 +1237,42 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 {
 	// if I was killed before I could finish throwing my grenade, drop
 	// a grenade item that the player can retrieve.
-	if( GetActivity() == ACT_RANGE_ATTACK2 )
-	{
-		if( m_iLastAnimEventHandled != COMBINE_AE_GREN_TOSS )
-		{
-			// Drop the grenade as an item.
-			Vector vecStart;
-			GetAttachment( "lefthand", vecStart );
+	//if( GetActivity() == ACT_RANGE_ATTACK2 )
+	//{
+	//	if( m_iLastAnimEventHandled != COMBINE_AE_GREN_TOSS )
+	//	{
+	//		// Drop the grenade as an item.
+	//		Vector vecStart;
+	//		GetAttachment( "lefthand", vecStart );
 
-			CBaseEntity *pItem = DropItem( "weapon_frag", vecStart, RandomAngle(0,360) );
+	//		CBaseEntity *pItem = DropItem( "weapon_frag", vecStart, RandomAngle(0,360) );
 
-			if ( pItem )
-			{
-				IPhysicsObject *pObj = pItem->VPhysicsGetObject();
+	//		if ( pItem )
+	//		{
+	//			IPhysicsObject *pObj = pItem->VPhysicsGetObject();
 
-				if ( pObj )
-				{
-					Vector			vel;
-					vel.x = random->RandomFloat( -100.0f, 100.0f );
-					vel.y = random->RandomFloat( -100.0f, 100.0f );
-					vel.z = random->RandomFloat( 800.0f, 1200.0f );
-					AngularImpulse	angImp	= RandomAngularImpulse( -300.0f, 300.0f );
+	//			if ( pObj )
+	//			{
+	//				Vector			vel;
+	//				vel.x = random->RandomFloat( -100.0f, 100.0f );
+	//				vel.y = random->RandomFloat( -100.0f, 100.0f );
+	//				vel.z = random->RandomFloat( 800.0f, 1200.0f );
+	//				AngularImpulse	angImp	= RandomAngularImpulse( -300.0f, 300.0f );
 
-					vel[2] = 0.0f;
-					pObj->AddVelocity( &vel, &angImp );
-				}
+	//				vel[2] = 0.0f;
+	//				pObj->AddVelocity( &vel, &angImp );
+	//			}
 
-				// In the Citadel we need to dissolve this
-				if ( PlayerHasMegaPhysCannon() )
-				{
-					CBaseCombatWeapon *pWeapon = static_cast<CBaseCombatWeapon *>(pItem);
+	//			// In the Citadel we need to dissolve this
+	//			if ( PlayerHasMegaPhysCannon() )
+	//			{
+	//				CBaseCombatWeapon *pWeapon = static_cast<CBaseCombatWeapon *>(pItem);
 
-					pWeapon->Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
-				}
-			}
-		}
-	}
+	//				pWeapon->Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
+	//			}
+	//		}
+	//	}
+	//}
 
 	BaseClass::Event_Killed( info );
 }
@@ -1299,19 +1324,37 @@ Activity CNPC_Combine::NPC_TranslateActivity( Activity eNewActivity )
 	//Slaming this back to ACT_COMBINE_BUGBAIT since we don't want ANYTHING to change our activity while we burn.
 	if ( HasCondition( COND_COMBINE_ON_FIRE ) )
 		return BaseClass::NPC_TranslateActivity( ACT_COMBINE_BUGBAIT );
+	
+	if (eNewActivity == ACT_SIGNAL_GROUP)
+	{
+		if ( GetTeamNumber() != TEAM_COMBINE )
+		{
+			eNewActivity = ACT_IDLE_ANGRY;
+		}
+	}
+
+	if (eNewActivity == ACT_MELEE_ATTACK1)
+	{
+		if ( GetTeamNumber() != TEAM_COMBINE )
+		{
+			if ( m_iLastAnimEventHandled != COMBINE_AE_KICK )
+			{
+				animevent_t fakeEvent;
+				fakeEvent.pSource = this;
+				fakeEvent.type = 0;
+				fakeEvent.event = COMBINE_AE_KICK;			
+				this->HandleAnimEvent( &fakeEvent );
+			}
+			eNewActivity = ACT_MELEE_ATTACK_SWING;
+		}
+	}
 
 	if (eNewActivity == ACT_RANGE_ATTACK2)
 	{
-		// grunt is going to a secondary long range attack. This may be a thrown 
-		// grenade or fired grenade, we must determine which and pick proper sequence
-		if (Weapon_OwnsThisType( "weapon_grenadelauncher" ) )
-		{
-			return ( Activity )ACT_COMBINE_LAUNCH_GRENADE;
-		}
+		if ( GetTeamNumber() == TEAM_COMBINE )
+			eNewActivity = ACT_COMBINE_THROW_GRENADE;
 		else
-		{
-			return ( Activity )ACT_COMBINE_THROW_GRENADE;
-		}
+			eNewActivity = ACT_RANGE_ATTACK_THROW;
 	}
 	else if (eNewActivity == ACT_IDLE)
 	{
@@ -1399,7 +1442,7 @@ void CNPC_Combine::AnnounceAssault(void)
 	// Make sure player can see me
 	if ( FVisible( pBCC ) )
 	{
-		m_Sentences.Speak( "COMBINE_ASSAULT" );
+		SpeakOrTalk( "COMBINE_ASSAULT" );
 	}
 }
 
@@ -1438,7 +1481,7 @@ void CNPC_Combine::AnnounceEnemyType( CBaseEntity *pEnemy )
 		break;
 	}
 
-	m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_HIGH );
+	SpeakOrTalk( pSentenceName, SENTENCE_PRIORITY_HIGH );
 }
 
 void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
@@ -1474,7 +1517,7 @@ void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
 		break;
 	}
 
-	m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_HIGH );
+	SpeakOrTalk( pSentenceName, SENTENCE_PRIORITY_HIGH );
 }
 
 //-----------------------------------------------------------------------------
@@ -1573,6 +1616,7 @@ int CNPC_Combine::SelectCombatSchedule()
 	// ---------------------
 	if ( ( HasCondition ( COND_NO_PRIMARY_AMMO ) || HasCondition ( COND_LOW_PRIMARY_AMMO ) ) && !HasCondition( COND_CAN_MELEE_ATTACK1) )
 	{
+		SpeakOrTalk( "COMBINE_COVER" );
 		return SCHED_HIDE_AND_RELOAD;
 	}
 
@@ -1598,7 +1642,7 @@ int CNPC_Combine::SelectCombatSchedule()
 				else
 				{
 					//!!!KELLY - this grunt was hit and is going to run to cover.
-					// m_Sentences.Speak( "COMBINE_COVER" );
+					// SpeakOrTalk( "COMBINE_COVER" );
 					return SCHED_TAKE_COVER_FROM_ENEMY;
 				}
 			}
@@ -1792,23 +1836,26 @@ int CNPC_Combine::SelectSchedule( void )
 							}
 						}
 
-						m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
-
-						// If the sound is approaching danger, I have no enemy, and I don't see it, turn to face.
-						if( !GetEnemy() && pSound->IsSoundType(SOUND_CONTEXT_DANGER_APPROACH) && pSound->m_hOwner && !FInViewCone(pSound->GetSoundReactOrigin()) )
+						if( !pSoundOwner || pSoundOwner->GetTeamNumber() != this->GetTeamNumber() )
 						{
-							GetMotor()->SetIdealYawToTarget( pSound->GetSoundReactOrigin() );
-							return SCHED_COMBINE_FACE_IDEAL_YAW;
-						}
+							SpeakOrTalk( pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
 
-						return SCHED_TAKE_COVER_FROM_BEST_SOUND;
+							// If the sound is approaching danger, I have no enemy, and I don't see it, turn to face.
+							if( !GetEnemy() && pSound->IsSoundType(SOUND_CONTEXT_DANGER_APPROACH) && pSound->m_hOwner && !FInViewCone(pSound->GetSoundReactOrigin()) )
+							{
+								GetMotor()->SetIdealYawToTarget( pSound->GetSoundReactOrigin() );
+								return SCHED_COMBINE_FACE_IDEAL_YAW;
+							}
+
+							return SCHED_TAKE_COVER_FROM_BEST_SOUND;
+						}
 					}
 
 					// JAY: This was disabled in HL1.  Test?
-					if (!HasCondition( COND_SEE_ENEMY ) && ( pSound->m_iType & (SOUND_PLAYER | SOUND_COMBAT) ))
+					/*if (!HasCondition( COND_SEE_ENEMY ) && ( pSound->m_iType & (SOUND_PLAYER | SOUND_COMBAT) ))
 					{
 						GetMotor()->SetIdealYawToTarget( pSound->GetSoundReactOrigin() );
-					}
+					}*/
 				}
 			}
 		}
@@ -1840,7 +1887,8 @@ int CNPC_Combine::SelectSchedule( void )
 				}
 			}
 
-			if( HasCondition( COND_HEAR_COMBAT ) )
+			//remove this, trying to prevent them from hearing things and crossing lanes
+			/*if( HasCondition( COND_HEAR_COMBAT ) )
 			{
 				CSound *pSound = GetBestSound();
 
@@ -1851,7 +1899,7 @@ int CNPC_Combine::SelectSchedule( void )
 						return SCHED_INVESTIGATE_SOUND;
 					}
 				}
-			}
+			}*/
 
 			// Don't patrol if I'm in the middle of an assault, because I'll never return to the assault. 
 			if ( !m_AssaultBehavior.HasAssaultCue() )
@@ -2058,7 +2106,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 					HasCondition(COND_CAN_RANGE_ATTACK2)		&&
 					OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
 				{
-					m_Sentences.Speak( "COMBINE_THROW_GRENADE" );
+					SpeakOrTalk( "COMBINE_THROW_GRENADE" );
 					return SCHED_COMBINE_TOSS_GRENADE_COVER1;
 				}
 				else
@@ -2363,6 +2411,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				break;
 			}
 		case COMBINE_AE_RELOAD:
+		case EVENT_WEAPON_RELOAD:
 
 			// We never actually run out of ammo, just need to refill the clip
 			if (GetActiveWeapon())
@@ -2378,14 +2427,20 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 			break;
 
 		case COMBINE_AE_GREN_TOSS:
+		case EVENT_WEAPON_THROW:
 			{
+				if ( GetTeamNumber() != TEAM_COMBINE )
+					EmitSound( "npc_citizen.headsup2" );
+
 				Vector vecSpin;
 				vecSpin.x = random->RandomFloat( -1000.0, 1000.0 );
 				vecSpin.y = random->RandomFloat( -1000.0, 1000.0 );
 				vecSpin.z = random->RandomFloat( -1000.0, 1000.0 );
 
 				Vector vecStart;
-				GetAttachment( "lefthand", vecStart );
+				if( !GetAttachment( "lefthand", vecStart ) )
+					if( !GetAttachment( "anim_attachment_RH", vecStart ) )
+						vecStart = EyePosition();
 
 				if( m_NPCState == NPC_STATE_SCRIPT )
 				{
@@ -2463,18 +2518,19 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 					}
 				}			
 
-				m_Sentences.Speak( "COMBINE_KICK" );
+				SpeakOrTalk( "COMBINE_KICK" );
 				handledEvent = true;
 				break;
 			}
 
 		case COMBINE_AE_CAUGHT_ENEMY:
-			m_Sentences.Speak( "COMBINE_ALERT" );
+			SpeakOrTalk( "COMBINE_ALERT" );
 			handledEvent = true;
 			break;
 
 		default:
 			BaseClass::HandleAnimEvent( pEvent );
+			handledEvent = true;
 			break;
 		}
 	}
@@ -2556,7 +2612,7 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 		// If I'm moving more than 20ft, I need to talk about it
 		if ( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
 		{
-			m_Sentences.Speak( "COMBINE_FLANK" );
+			SpeakOrTalk( "COMBINE_FLANK" );
 		}
 		break;
 	}
@@ -2586,7 +2642,7 @@ void CNPC_Combine::PainSound ( void )
 			pSentenceName = "COMBINE_COVER";
 		}
 
-		m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
+		SpeakOrTalk( pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 		m_flNextPainSoundTime = gpGlobals->curtime + 1;
 	}
 }
@@ -2612,7 +2668,7 @@ void CNPC_Combine::LostEnemySound( void)
 		pSentence = "COMBINE_LOST_SHORT";
 	}
 
-	if ( m_Sentences.Speak( pSentence ) >= 0 )
+	if ( SpeakOrTalk( pSentence ) >= 0 )
 	{
 		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
 	}
@@ -2626,7 +2682,7 @@ void CNPC_Combine::LostEnemySound( void)
 //-----------------------------------------------------------------------------
 void CNPC_Combine::FoundEnemySound( void)
 {
-	m_Sentences.Speak( "COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH );
+	SpeakOrTalk( "COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH );
 }
 
 //-----------------------------------------------------------------------------
@@ -2641,7 +2697,7 @@ void CNPC_Combine::AlertSound( void)
 {
 	if ( gpGlobals->curtime > m_flNextAlertSoundTime )
 	{
-		m_Sentences.Speak( "COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH );
+		SpeakOrTalk( "COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH );
 		m_flNextAlertSoundTime = gpGlobals->curtime + 10.0f;
 	}
 }
@@ -2653,14 +2709,14 @@ void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 {
 	if ( GetSquad()->NumMembers() < 2 )
 	{
-		m_Sentences.Speak( "COMBINE_LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL );
+		SpeakOrTalk( "COMBINE_LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL );
 		JustMadeSound();
 		return;
 	}
 	// relaxed visibility test so that guys say this more often
 	//if( FInViewCone( pFriend ) && FVisible( pFriend ) )
 	{
-		m_Sentences.Speak( "COMBINE_MAN_DOWN" );
+		SpeakOrTalk( "COMBINE_MAN_DOWN" );
 	}
 	BaseClass::NotifyDeadFriend(pFriend);
 }
@@ -2674,7 +2730,7 @@ void CNPC_Combine::DeathSound ( void )
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
 
-	m_Sentences.Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
+	SpeakOrTalk( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 }
 
 //=========================================================
@@ -2690,21 +2746,21 @@ void CNPC_Combine::IdleSound( void )
 			switch (random->RandomInt(0,2))
 			{
 			case 0: // check in
-				if ( m_Sentences.Speak( "COMBINE_CHECK" ) >= 0 )
+				if ( SpeakOrTalk( "COMBINE_CHECK" ) >= 0 )
 				{
 					g_fCombineQuestion = 1;
 				}
 				break;
 
 			case 1: // question
-				if ( m_Sentences.Speak( "COMBINE_QUEST" ) >= 0 )
+				if ( SpeakOrTalk( "COMBINE_QUEST" ) >= 0 )
 				{
 					g_fCombineQuestion = 2;
 				}
 				break;
 
 			case 2: // statement
-				m_Sentences.Speak( "COMBINE_IDLE" );
+				SpeakOrTalk( "COMBINE_IDLE" );
 				break;
 			}
 		}
@@ -2713,13 +2769,13 @@ void CNPC_Combine::IdleSound( void )
 			switch (g_fCombineQuestion)
 			{
 			case 1: // check in
-				if ( m_Sentences.Speak( "COMBINE_CLEAR" ) >= 0 )
+				if ( SpeakOrTalk( "COMBINE_CLEAR" ) >= 0 )
 				{
 					g_fCombineQuestion = 0;
 				}
 				break;
 			case 2: // question 
-				if ( m_Sentences.Speak( "COMBINE_ANSWER" ) >= 0 )
+				if ( SpeakOrTalk( "COMBINE_ANSWER" ) >= 0 )
 				{
 					g_fCombineQuestion = 0;
 				}
@@ -3138,6 +3194,8 @@ void CNPC_Combine::OnEndMoveAndShoot()
 //-----------------------------------------------------------------------------
 WeaponProficiency_t CNPC_Combine::CalcWeaponProficiency( CBaseCombatWeapon *pWeapon )
 {
+	return WEAPON_PROFICIENCY_GOOD;
+
 	if( FClassnameIs( pWeapon, "weapon_ar2" ) )
 	{
 		if( hl2_episodic.GetBool() )
@@ -3278,6 +3336,33 @@ bool CNPC_Combine::IsRunningApproachEnemySchedule()
 bool CNPC_Combine::ShouldPickADeathPose( void ) 
 { 
 	return !IsCrouching(); 
+}
+
+int CNPC_Combine::SpeakOrTalk( const char *pSentence, SentencePriority_t nSoundPriority, SentenceCriteria_t nCriteria )
+{
+	if ( GetTeamNumber() == TEAM_COMBINE )
+	{
+		return m_Sentences.Speak( pSentence, nSoundPriority );
+	}
+	else
+	{
+		if (	  Q_stristr ( pSentence, "COMBINE_ANNOUNCE" ) )		EmitSound ( "npc_citizen.letsgo01", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_ASSAULT" ) )		EmitSound ( "npc_citizen.evenodds", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_ALERT" ) )		EmitSound ( "npc_citizen.combine01", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_KILL_MONST" ) )	EmitSound ( "npc_citizen.gotone01", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_PLAYER_DEAD" ) )	EmitSound ( "npc_citizen.gotone02", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_COVER" ) )		EmitSound ( "npc_citizen.coverwhilereload01", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_GREN" ) )			EmitSound ( "npc_citizen.watchout", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_PAIN" ) )			EmitSound ( "npc_citizen.ow01", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_TAUNT" ) )		EmitSound ( "npc_citizen.imhurt02", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_COVER" ) )		EmitSound ( "npc_citizen.illstayhere01", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_LAST_OF_SQUAD" ) ) EmitSound ( "npc_citizen.gordead_ques07" );
+		else if ( Q_stristr ( pSentence, "COMBINE_MAN_DOWN" ) )		EmitSound ( "npc_citizen.gordead_ques02", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_DIE" ) )			EmitSound ( "npc_citizen.die", gpGlobals->curtime );
+		else if ( Q_stristr ( pSentence, "COMBINE_CLEAR" ) )		EmitSound ( "npc_citizen.leadtheway02", gpGlobals->curtime );		
+		
+		return 1;
+	}
 }
 
 //-----------------------------------------------------------------------------

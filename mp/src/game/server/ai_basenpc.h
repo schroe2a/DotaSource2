@@ -446,6 +446,8 @@ float ChangeDistance( float flInterval, float flGoalDistance, float flGoalVeloci
 //
 //=============================================================================
 
+#define MAX_AIS	256
+
 class CAI_Manager
 {
 public:
@@ -454,16 +456,12 @@ public:
 	CAI_BaseNPC **	AccessAIs();
 	int				NumAIs();
 	
-	void AddAI( CAI_BaseNPC *pAI );
+	int AddAI( CAI_BaseNPC *pAI );
 	void RemoveAI( CAI_BaseNPC *pAI );
 
 	bool FindAI( CAI_BaseNPC *pAI )	{ return ( m_AIs.Find( pAI ) != m_AIs.InvalidIndex() ); }
 	
 private:
-	enum
-	{
-		MAX_AIS = 256
-	};
 	
 	typedef CUtlVector<CAI_BaseNPC *> CAIArray;
 	
@@ -553,6 +551,8 @@ public:
 	void TestPlayerPushing( CBaseEntity *pPlayer );
 	void CascadePlayerPush( const Vector &push, const Vector &pushOrigin );
 	void NotifyPushMove();
+
+	Disposition_t	IRelationType ( CBaseEntity *pTarget );
 
 public:
 	//-----------------------------------------------------
@@ -1105,7 +1105,7 @@ public:
 	const Vector &GetCommandGoal() const								{ return m_vecCommandGoal; }
 	virtual void OnMoveToCommandGoalFailed()							{}
 	string_t GetPlayerSquadName() const									{ Assert( gm_iszPlayerSquad != NULL_STRING ); return gm_iszPlayerSquad; }
-	bool IsInPlayerSquad() const;
+	virtual bool IsInPlayerSquad() const;
 	virtual CAI_BaseNPC *GetSquadCommandRepresentative()				{ return NULL; }
 
 	virtual bool TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies ) { OnTargetOrder(); return true; }
@@ -2123,6 +2123,16 @@ public:
 	void				GetPlayerAvoidBounds( Vector *pMins, Vector *pMaxs );
 
 	void				StartPingEffect( void ) { m_flTimePingEffect = gpGlobals->curtime + 2.0f; DispatchUpdateTransmitState(); }
+
+	// used by lag compensation to be able to refer to & track specific NPCs, and detect changes in the AI list
+	void				SetAIIndex(int i) { m_iAIIndex = i; }
+	int					GetAIIndex() { return m_iAIIndex; }
+
+protected:
+	int					m_iAIIndex;
+
+	int					m_iMoneyToGive;
+	int					m_iExpToGive;
 };
 
 

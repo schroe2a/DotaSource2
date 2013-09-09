@@ -101,6 +101,8 @@ public:
 	// Disable auto fading under dx7 or when level fades are specified
 	void	DisableAutoFade();
 
+	virtual void			UpdateOnRemove( void );
+
 public:
 	COutputEvent	m_OnBreak;
 	COutputFloat	m_OnHealthChanged;

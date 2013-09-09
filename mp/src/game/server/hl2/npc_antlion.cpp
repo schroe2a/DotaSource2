@@ -30,6 +30,7 @@
 #include "props.h"
 #include "particle_parse.h"
 #include "ai_tacticalservices.h"
+#include "hl2mp_player.h"
 
 #ifdef HL2_EPISODIC
 #include "grenade_spit.h"
@@ -185,6 +186,8 @@ CNPC_Antlion::CNPC_Antlion( void )
 	m_bForcedStuckJump = false;
 	m_nBodyBone = -1;
 	m_bSuppressUnburrowEffects = false;
+
+	m_iExpToGive = 25;
 }
 
 LINK_ENTITY_TO_CLASS( npc_antlion, CNPC_Antlion );
@@ -630,7 +633,6 @@ void CNPC_Antlion::Event_Killed( const CTakeDamageInfo &info )
 		EmitSound( filter, entindex(), "NPC_Antlion.RunOverByVehicle" );
 	}
 
-	// Stop our zap effect!
 	SetContextThink( NULL, gpGlobals->curtime, "ZapThink" );
 }
 
@@ -4032,12 +4034,14 @@ bool CNPC_Antlion::CorpseGib( const CTakeDamageInfo &info )
 void CNPC_Antlion::Touch( CBaseEntity *pOther )
 {
 	//See if the touching entity is a vehicle
-	CBasePlayer *pPlayer = ToBasePlayer( AI_GetSinglePlayer() );
-	
 	// FIXME: Technically we'll want to check to see if a vehicle has touched us with the player OR NPC driver
 
-	if ( pPlayer && pPlayer->IsInAVehicle() )
+	for (int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+		if ( !pPlayer || !pPlayer->IsInAVehicle() )
+			continue;
+		
 		IServerVehicle	*pVehicle = pPlayer->GetVehicle();
 		CBaseEntity *pVehicleEnt = pVehicle->GetVehicleEnt();
 
@@ -4087,6 +4091,8 @@ void CNPC_Antlion::Touch( CBaseEntity *pOther )
 					}
 				}
 			}
+
+			break; // safe to assume will only be touched by 1 vehicle per frame
 		}
 	}
 

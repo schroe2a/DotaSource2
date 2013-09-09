@@ -14,6 +14,7 @@
 #include "iviewrender_beams.h"			// flashlight beam
 #include "r_efx.h"
 #include "dlight.h"
+#include "c_baseskill.h"
 
 // Don't alias here
 #if defined( CHL2MP_Player )
@@ -23,6 +24,35 @@
 LINK_ENTITY_TO_CLASS( player, C_HL2MP_Player );
 
 IMPLEMENT_CLIENTCLASS_DT(C_HL2MP_Player, DT_HL2MP_Player, CHL2MP_Player)
+
+	RecvPropFloat( RECVINFO( maxWalkSpeed ) ),
+	RecvPropFloat( RECVINFO( maxNormalSpeed ) ),
+	RecvPropFloat( RECVINFO( maxSprintSpeed ) ),
+
+	RecvPropEHandle( RECVINFO( m_hSkill1 ) ),
+	RecvPropEHandle( RECVINFO( m_hSkill2 ) ),
+	RecvPropEHandle( RECVINFO( m_hSkill3 ) ),
+	RecvPropEHandle( RECVINFO( m_hSkill4 ) ),
+
+	RecvPropInt( RECVINFO( m_canShop ) ),
+
+	RecvPropInt( RECVINFO( m_iHasPistol ) ),
+	RecvPropInt( RECVINFO( m_iHasSMG ) ),
+	RecvPropInt( RECVINFO( m_iHasAR2 ) ),
+	RecvPropInt( RECVINFO( m_iHasBuckshot ) ),
+	RecvPropInt( RECVINFO( m_iHas357 ) ),
+	RecvPropInt( RECVINFO( m_iHasXBow ) ),
+	RecvPropInt( RECVINFO( m_iHasPhysCannon ) ),
+	
+	RecvPropInt( RECVINFO( m_iMoney ) ),
+
+	RecvPropInt( RECVINFO( m_HeroType ) ),
+	RecvPropInt( RECVINFO( m_iSkillPoints ) ),
+	RecvPropInt( RECVINFO( m_iStatLevel ) ),	
+	
+	RecvPropInt( RECVINFO( m_iExp ) ),
+	RecvPropInt( RECVINFO( m_iLevel ) ),
+
 	RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
 	RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
 	RecvPropEHandle( RECVINFO( m_hRagdoll ) ),
@@ -35,10 +65,6 @@ END_RECV_TABLE()
 BEGIN_PREDICTION_DATA( C_HL2MP_Player )
 	DEFINE_PRED_FIELD( m_fIsWalking, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 END_PREDICTION_DATA()
-
-#define	HL2_WALK_SPEED 150
-#define	HL2_NORM_SPEED 190
-#define	HL2_SPRINT_SPEED 320
 
 static ConVar cl_playermodel( "cl_playermodel", "none", FCVAR_USERINFO | FCVAR_ARCHIVE | FCVAR_SERVER_CAN_EXECUTE, "Default Player Model");
 static ConVar cl_defaultweapon( "cl_defaultweapon", "weapon_physcannon", FCVAR_USERINFO | FCVAR_ARCHIVE, "Default Spawn Weapon");
@@ -58,6 +84,10 @@ C_HL2MP_Player::C_HL2MP_Player() : m_PlayerAnimState( this ), m_iv_angEyeAngles(
 	m_blinkTimer.Invalidate();
 
 	m_pFlashlightBeam = NULL;
+
+	maxWalkSpeed = 150;
+	maxNormalSpeed = 190;
+	maxSprintSpeed = 320;
 }
 
 C_HL2MP_Player::~C_HL2MP_Player( void )
@@ -576,11 +606,11 @@ void C_HL2MP_Player::StartSprinting( void )
 		return;
 	}
 
-	CPASAttenuationFilter filter( this );
-	filter.UsePredictionRules();
-	EmitSound( filter, entindex(), "HL2Player.SprintStart" );
+	//CPASAttenuationFilter filter( this );
+	//filter.UsePredictionRules();
+	//EmitSound( filter, entindex(), "HL2Player.SprintStart" );
 
-	SetMaxSpeed( HL2_SPRINT_SPEED );
+	SetMaxSpeed( maxSprintSpeed );
 	m_fIsSprinting = true;
 }
 
@@ -589,7 +619,7 @@ void C_HL2MP_Player::StartSprinting( void )
 //-----------------------------------------------------------------------------
 void C_HL2MP_Player::StopSprinting( void )
 {
-	SetMaxSpeed( HL2_NORM_SPEED );
+	SetMaxSpeed( maxNormalSpeed );
 	m_fIsSprinting = false;
 }
 
@@ -644,7 +674,7 @@ void C_HL2MP_Player::HandleSpeedChanges( void )
 //-----------------------------------------------------------------------------
 void C_HL2MP_Player::StartWalking( void )
 {
-	SetMaxSpeed( HL2_WALK_SPEED );
+	SetMaxSpeed( maxWalkSpeed );
 	m_fIsWalking = true;
 }
 
@@ -652,7 +682,7 @@ void C_HL2MP_Player::StartWalking( void )
 //-----------------------------------------------------------------------------
 void C_HL2MP_Player::StopWalking( void )
 {
-	SetMaxSpeed( HL2_NORM_SPEED );
+	SetMaxSpeed( maxNormalSpeed );
 	m_fIsWalking = false;
 }
 
@@ -744,6 +774,56 @@ IRagdoll* C_HL2MP_Player::GetRepresentativeRagdoll() const
 	}
 }
 
+KeyValues	*C_HL2MP_Player::GetSkillData()
+{
+	KeyValues *data = new KeyValues("data");
+	data->SetInt( "m_HeroType", m_HeroType );
+	data->SetInt( "m_iLevel", m_iLevel );
+	data->SetInt( "m_iSkillPoints", m_iSkillPoints );
+
+	C_BaseSkill *skill = (C_BaseSkill*)m_hSkill1.Get();
+	if( skill )
+	{
+		data->SetInt( "m_iSkill1Level", skill->GetLevel() );
+	}
+
+	skill = (C_BaseSkill*)m_hSkill2.Get();
+	if( skill )
+	{	
+		data->SetInt( "m_iSkill2Level", skill->GetLevel() );
+	}
+
+	skill = (C_BaseSkill*)m_hSkill3.Get();
+	if( skill )
+	{
+		data->SetInt( "m_iSkill3Level", skill->GetLevel() );
+	}
+
+	skill = (C_BaseSkill*)m_hSkill4.Get();
+	if( skill )
+	{
+		data->SetInt( "m_iSkill4Level", skill->GetLevel() );
+	}
+
+	data->SetInt( "m_iStatLevel", m_iStatLevel );
+	return data;
+}
+
+C_BaseSkill* C_HL2MP_Player::GetSkill(int index)
+{
+	switch ( index )
+	{
+	case 1:
+		return dynamic_cast< C_BaseSkill* >( m_hSkill1.Get() );
+	case 2:
+		return dynamic_cast< C_BaseSkill* >( m_hSkill2.Get() );
+	case 3:
+		return dynamic_cast< C_BaseSkill* >( m_hSkill3.Get() );
+	case 4:
+		return dynamic_cast< C_BaseSkill* >( m_hSkill4.Get() );
+	}
+	return NULL;
+}
 //HL2MPRAGDOLL
 
 

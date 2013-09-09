@@ -449,7 +449,14 @@ public:
 		if ( ent )
 		{
 			char const *actorModel = STRING( ent->GetModelName() );
-			gender = soundemitterbase->GetActorGender( actorModel );
+			if ( Q_stristr( actorModel, "alyx") )
+				gender = GENDER_FEMALE;
+			else if ( Q_stristr( actorModel, "mossman") )
+				gender = GENDER_FEMALE;
+			else if ( Q_stristr( actorModel, "player") )
+				gender = GENDER_MALE;
+			else
+				gender = soundemitterbase->GetActorGender( actorModel );
 		}
 
 		if ( !soundemitterbase->GetParametersForSoundEx( ep.m_pSoundName, handle, params, gender, true ) )

@@ -41,6 +41,12 @@
 #include "xbox/xbox_console.h"
 #endif
 
+#include "iefx.h"
+#include "dlight.h"
+#include "view.h"
+#include "model_types.h"
+#include "classmenu.h"
+
 #if defined( REPLAY_ENABLED )
 #include "replay/replaycamera.h"
 #include "replay/ireplaysystem.h"
@@ -556,8 +562,207 @@ void ClientModeShared::PostRender()
 	ParticleMgr()->PostRender();
 }
 
+CHandle<C_BaseAnimatingOverlay> g_ClassImagePlayer;	// player
+CHandle<C_BaseAnimating> g_ClassImageWeapon;	// weapon
+
+// Utility to determine if the vgui panel is visible
+bool WillPanelBeVisible( vgui::VPANEL hPanel )
+{
+    while ( hPanel )
+    {
+        if ( !vgui::ipanel()->IsVisible( hPanel ) )
+            return false;
+        hPanel = vgui::ipanel()->GetParent( hPanel );
+    }
+    return true;
+}
+
+// Called to see if we should be creating or recreating the model instances
+bool ShouldRecreateClassImageEntity( C_BaseAnimating *pEnt, const char *pNewModelName )
+{
+    if ( !pNewModelName || !pNewModelName[0] )
+        return false;
+    if ( !pEnt )
+        return true;
+    const model_t *pModel = pEnt->GetModel();
+    if ( !pModel )
+        return true;
+    const char *pName = modelinfo->GetModelName( pModel );
+    if ( !pName )
+        return true;
+    // reload only if names are different
+    return( Q_stricmp( pName, pNewModelName ) != 0 );
+}
+
+void UpdateClassImageEntity( 
+        const char *pModelName,
+        int x, int y, int width, int height )
+{
+    C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+    if ( !pLocalPlayer )
+        return;
+
+	// set the weapon model and upper animation to use
+    const char *pWeaponName = "models/weapons/w_pistol.mdl";
+    //const char *pWeaponSequence = "run_aiming_p_all";
+    C_BaseAnimatingOverlay *pPlayerModel = g_ClassImagePlayer.Get();
+    
+	// Does the entity even exist yet?
+    bool recreatePlayer = ShouldRecreateClassImageEntity( pPlayerModel, pModelName );
+	if ( recreatePlayer )
+    {
+        // if the pointer already exists, remove it as we create a new one.
+        if ( pPlayerModel )
+            pPlayerModel->Remove();
+        // create a new instance
+        pPlayerModel = new C_BaseAnimatingOverlay;
+        pPlayerModel->InitializeAsClientEntity( pModelName, RENDER_GROUP_OPAQUE_ENTITY );
+        pPlayerModel->AddEffects( EF_NODRAW ); // don't let the renderer draw the model normally
+		
+		// have the player stand idle
+        pPlayerModel->SetSequence( pPlayerModel->LookupSequence( "run_pistol" ) );
+        pPlayerModel->SetPoseParameter( 0, 0.0f ); // move_yaw
+        pPlayerModel->SetPoseParameter( 1, 10.0f ); // body_pitch, look down a bit
+        pPlayerModel->SetPoseParameter( 2, 0.0f ); // body_yaw
+        pPlayerModel->SetPoseParameter( 3, 0.0f ); // move_y
+        pPlayerModel->SetPoseParameter( 4, 0.0f ); // move_x
+        g_ClassImagePlayer = pPlayerModel;
+    }
+
+	C_BaseAnimating *pWeaponModel = g_ClassImageWeapon.Get();
+    // Does the entity even exist yet?
+    if ( recreatePlayer || ShouldRecreateClassImageEntity( pWeaponModel, pWeaponName ) )
+    {
+        if ( pWeaponModel )
+            pWeaponModel->Remove();
+        pWeaponModel = new C_BaseAnimating;
+        pWeaponModel->InitializeAsClientEntity( pWeaponName, RENDER_GROUP_OPAQUE_ENTITY );
+        pWeaponModel->AddEffects( EF_NODRAW ); // don't let the renderer draw the model normally
+        pWeaponModel->FollowEntity( pPlayerModel ); // attach to player model
+        g_ClassImageWeapon = pWeaponModel;
+    }
+
+	Vector origin = pLocalPlayer->EyePosition();
+    Vector lightOrigin = origin;
+    // find a spot inside the world for the dlight's origin, or it won't illuminate the model
+    Vector testPos( origin.x - 100, origin.y, origin.z + 100 );
+    trace_t tr;
+    UTIL_TraceLine( origin, testPos, MASK_OPAQUE, pLocalPlayer, COLLISION_GROUP_NONE, &tr );
+    if ( tr.fraction == 1.0f )
+    {
+        lightOrigin = tr.endpos;
+    }
+    else
+    {
+        // Now move the model away so we get the correct illumination
+        lightOrigin = tr.endpos + Vector( 1, 0, -1 );	// pull out from the solid
+        Vector start = lightOrigin;
+        Vector end = lightOrigin + Vector( 100, 0, -100 );
+        UTIL_TraceLine( start, end, MASK_OPAQUE, pLocalPlayer, COLLISION_GROUP_NONE, &tr );
+        origin = tr.endpos;
+    }
+    float ambient = engine->GetLightForPoint( origin, true ).Length();
+    // Make a light so the model is well lit.
+    // use a non-zero number so we cannibalize ourselves next frame
+    dlight_t *dl = effects->CL_AllocDlight( LIGHT_INDEX_TE_DYNAMIC+1 );
+    dl->flags = DLIGHT_NO_WORLD_ILLUMINATION;
+    dl->origin = lightOrigin;
+    // Go away immediately so it doesn't light the world too.
+    dl->die = gpGlobals->curtime + 0.1f;
+    dl->color.r = dl->color.g = dl->color.b = 250;
+    if ( ambient < 1.0f )
+    {
+        dl->color.exponent = 1 + (1 - ambient) * 2;
+    }
+    dl->radius	= 400;
+
+	// move player model in front of our view
+    pPlayerModel->SetAbsOrigin( origin );
+    pPlayerModel->SetAbsAngles( QAngle( 0, 210, 0 ) );
+
+	// set upper body animation
+    //pPlayerModel->m_SequenceTransitioner.UpdateCurrent(
+    //    pPlayerModel->GetModelPtr(),
+    //    pPlayerModel->LookupSequence( "run_aiming_p_all" ),
+    //    pPlayerModel->GetCycle(),
+    //    pPlayerModel->GetPlaybackRate(),
+    //    gpGlobals->realtime
+    //    );
+    //// Now, blend the lower and upper (aim) anims together
+    //pPlayerModel->SetNumAnimOverlays( 2 );
+    //int numOverlays = pPlayerModel->GetNumAnimOverlays();
+    //for ( int i=0; i < numOverlays; ++i )
+    //{
+    //    C_AnimationLayer *layer = pPlayerModel->GetAnimOverlay( i );
+    //    layer->m_flCycle = pPlayerModel->GetCycle();
+    //    if ( i )
+    //        layer->m_nSequence = pPlayerModel->LookupSequence( pWeaponSequence );
+    //    else
+    //        layer->m_nSequence = pPlayerModel->LookupSequence( "run_aiming_p_all" );
+    //    layer->m_flPlaybackRate = 1.0;
+    //    layer->m_flWeight = 1.0f;
+    //    layer->SetOrder( i );
+    //}
+
+	pPlayerModel->FrameAdvance( gpGlobals->frametime );
+
+	// Now draw it.
+    CViewSetup view;
+    // setup the views location, size and fov (amongst others)
+    view.x = x;
+    view.y = y;
+    view.width = width;
+    view.height = height;
+    view.m_bOrtho = false;
+    view.fov = 54;
+    view.origin = origin + Vector( -110, -5, -5 );
+    // make sure that we see all of the player model
+    Vector vMins, vMaxs;
+    pPlayerModel->C_BaseAnimating::GetRenderBounds( vMins, vMaxs );
+    view.origin.z += ( vMins.z + vMaxs.z ) * 0.55f;
+    view.angles.Init();
+    //view.m_vUnreflectedOrigin = view.origin;
+    view.zNear = VIEW_NEARZ;
+    view.zFar = 1000;
+    //view.m_bForceAspectRatio1To1 = false;
+    // render it out to the new CViewSetup area
+    // it's possible that ViewSetup3D will be replaced in future code releases
+    Frustum dummyFrustum;
+    
+    // New Function instead of ViewSetup3D...
+    render->Push3DView( view, 0, NULL, dummyFrustum );
+    
+    pPlayerModel->DrawModel( STUDIO_RENDER );
+    
+    if ( pWeaponModel )
+    {
+       pWeaponModel->DrawModel( STUDIO_RENDER );
+    }
+    
+    render->PopView( dummyFrustum );
+}
+
 void ClientModeShared::PostRenderVGui()
 {
+	// If the team menu is up, then render the model
+    for ( int i=0; i < g_ClassImagePanels.Count(); i++ )
+    {
+        CClassImagePanel *pPanel = g_ClassImagePanels[i];
+        if ( WillPanelBeVisible( pPanel->GetVPanel() ) )
+        {
+            // Ok, we have a visible class image panel.
+            int x, y, w, h;
+            pPanel->GetBounds( x, y, w, h );
+            pPanel->LocalToScreen( x, y );
+            // Allow for the border.
+            x += 3;
+            y += 5;
+            w -= 2;
+            h -= 10;
+            UpdateClassImageEntity( g_ClassImagePanels[i]->m_ModelName, x, y, w, h );
+            return;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------

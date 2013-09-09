@@ -79,21 +79,7 @@ extern int gEvilImpulse101;
 
 ConVar sv_autojump( "sv_autojump", "0" );
 
-ConVar hl2_walkspeed( "hl2_walkspeed", "150" );
-ConVar hl2_normspeed( "hl2_normspeed", "190" );
-ConVar hl2_sprintspeed( "hl2_sprintspeed", "320" );
-
 ConVar hl2_darkness_flashlight_factor ( "hl2_darkness_flashlight_factor", "1" );
-
-#ifdef HL2MP
-	#define	HL2_WALK_SPEED 150
-	#define	HL2_NORM_SPEED 190
-	#define	HL2_SPRINT_SPEED 320
-#else
-	#define	HL2_WALK_SPEED hl2_walkspeed.GetFloat()
-	#define	HL2_NORM_SPEED hl2_normspeed.GetFloat()
-	#define	HL2_SPRINT_SPEED hl2_sprintspeed.GetFloat()
-#endif
 
 ConVar player_showpredictedposition( "player_showpredictedposition", "0" );
 ConVar player_showpredictedposition_timestep( "player_showpredictedposition_timestep", "1.0" );
@@ -395,6 +381,10 @@ CHL2_Player::CHL2_Player()
 
 	m_flArmorReductionTime = 0.0f;
 	m_iArmorReductionFrom = 0;
+
+	maxWalkSpeed = 150;
+	maxNormalSpeed = 190;
+	maxSprintSpeed = 320;
 }
 
 //
@@ -1215,7 +1205,7 @@ void CHL2_Player::StartSprinting( void )
 	filter.UsePredictionRules();
 	EmitSound( filter, entindex(), "HL2Player.SprintStart" );
 
-	SetMaxSpeed( HL2_SPRINT_SPEED );
+	SetMaxSpeed( maxSprintSpeed );
 	m_fIsSprinting = true;
 }
 
@@ -1231,11 +1221,11 @@ void CHL2_Player::StopSprinting( void )
 
 	if( IsSuitEquipped() )
 	{
-		SetMaxSpeed( HL2_NORM_SPEED );
+		SetMaxSpeed( maxNormalSpeed );
 	}
 	else
 	{
-		SetMaxSpeed( HL2_WALK_SPEED );
+		SetMaxSpeed( maxWalkSpeed );
 	}
 
 	m_fIsSprinting = false;
@@ -1267,7 +1257,7 @@ void CHL2_Player::EnableSprint( bool bEnable )
 //-----------------------------------------------------------------------------
 void CHL2_Player::StartWalking( void )
 {
-	SetMaxSpeed( HL2_WALK_SPEED );
+	SetMaxSpeed( maxWalkSpeed );
 	m_fIsWalking = true;
 }
 
@@ -1275,7 +1265,7 @@ void CHL2_Player::StartWalking( void )
 //-----------------------------------------------------------------------------
 void CHL2_Player::StopWalking( void )
 {
-	SetMaxSpeed( HL2_NORM_SPEED );
+	SetMaxSpeed( maxNormalSpeed );
 	m_fIsWalking = false;
 }
 
@@ -1671,7 +1661,7 @@ void CHL2_Player::CommanderExecute( CommanderCommand_t command )
 	
 	for ( i = 0; !bHandled && i < Allies.Count(); i++ )
 	{
-		if ( Allies[i] != pTargetNpc && Allies[i]->IsPlayerAlly() )
+		if ( Allies[i] != pTargetNpc && Allies[i]->IsPlayerAlly( this ) )
 		{
 			bHandled = !CommanderExecuteOne( Allies[i], goal, Allies.Base(), Allies.Count() );
 		}
@@ -2169,7 +2159,7 @@ void CHL2_Player::SetPlayerUnderwater( bool state )
 bool CHL2_Player::PassesDamageFilter( const CTakeDamageInfo &info )
 {
 	CBaseEntity *pAttacker = info.GetAttacker();
-	if( pAttacker && pAttacker->MyNPCPointer() && pAttacker->MyNPCPointer()->IsPlayerAlly() )
+	if( pAttacker && pAttacker->MyNPCPointer() && pAttacker->MyNPCPointer()->IsPlayerAlly( this ) )
 	{
 		return false;
 	}
@@ -2265,7 +2255,7 @@ void CHL2_Player::NotifyFriendsOfDamage( CBaseEntity *pAttackerEntity )
 			const float NEAR_Z = 12*12;
 			const float NEAR_XY_SQ = Square( 50*12 );
 			CAI_BaseNPC *pNpc = g_AI_Manager.AccessAIs()[i];
-			if ( pNpc->IsPlayerAlly() )
+			if ( pNpc->IsPlayerAlly( this ) )
 			{
 				const Vector &originNpc = pNpc->GetAbsOrigin();
 				if ( fabsf( originNpc.z - origin.z ) < NEAR_Z )
@@ -2575,54 +2565,6 @@ bool CHL2_Player::ShouldKeepLockedAutoaimTarget( EHANDLE hLockedTarget )
 		return false;
 
 	return true;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iCount - 
-//			iAmmoIndex - 
-//			bSuppressSound - 
-// Output : int
-//-----------------------------------------------------------------------------
-int CHL2_Player::GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound)
-{
-	// Don't try to give the player invalid ammo indices.
-	if (nAmmoIndex < 0)
-		return 0;
-
-	bool bCheckAutoSwitch = false;
-	if (!HasAnyAmmoOfType(nAmmoIndex))
-	{
-		bCheckAutoSwitch = true;
-	}
-
-	int nAdd = BaseClass::GiveAmmo(nCount, nAmmoIndex, bSuppressSound);
-
-	if ( nCount > 0 && nAdd == 0 )
-	{
-		// we've been denied the pickup, display a hud icon to show that
-		CSingleUserRecipientFilter user( this );
-		user.MakeReliable();
-		UserMessageBegin( user, "AmmoDenied" );
-			WRITE_SHORT( nAmmoIndex );
-		MessageEnd();
-	}
-
-	//
-	// If I was dry on ammo for my best weapon and justed picked up ammo for it,
-	// autoswitch to my best weapon now.
-	//
-	if (bCheckAutoSwitch)
-	{
-		CBaseCombatWeapon *pWeapon = g_pGameRules->GetNextBestWeapon(this, GetActiveWeapon());
-
-		if ( pWeapon && pWeapon->GetPrimaryAmmoType() == nAmmoIndex )
-		{
-			SwitchToNextBestWeapon(GetActiveWeapon());
-		}
-	}
-
-	return nAdd;
 }
 
 //-----------------------------------------------------------------------------
@@ -3795,7 +3737,7 @@ void CLogicPlayerProxy::Activate( void )
 
 	if ( m_hPlayer == NULL )
 	{
-		m_hPlayer = AI_GetSinglePlayer();
+		m_hPlayer = UTIL_GetLocalPlayer();
 	}
 }
 

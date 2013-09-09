@@ -18,6 +18,7 @@
 	#include "Sprite.h"
 	#include "SpriteTrail.h"
 	#include "beam_shared.h"
+	#include "ammodef.h"
 #endif
 
 #include "weapon_hl2mpbasehlmpcombatweapon.h"
@@ -639,7 +640,9 @@ void CWeaponCrossbow::FireBolt( void )
 	QAngle angAiming;
 	VectorAngles( vecAiming, angAiming );
 
-	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate( vecSrc, angAiming, GetHL2MPWpnData().m_iPlayerDamage, pOwner );
+	int damage = GetAmmoDef()->NPCDamage( m_iPrimaryAmmoType );
+
+	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate( vecSrc, angAiming, damage, pOwner );
 
 	if ( pOwner->GetWaterLevel() == 3 )
 	{

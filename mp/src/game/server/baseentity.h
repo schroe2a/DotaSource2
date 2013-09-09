@@ -1081,8 +1081,8 @@ public:
 	virtual bool IsLockedByMaster( void ) { return false; }
 
 	// Health accessors.
-	virtual int		GetMaxHealth()  const	{ return m_iMaxHealth; }
-	void	SetMaxHealth( int amt )	{ m_iMaxHealth = amt; }
+	virtual int	GetMaxHealth()  const	{ return m_iMaxHealth; }
+	void		SetMaxHealth( int amt )	{ m_iMaxHealth = amt; }
 
 	int		GetHealth() const		{ return m_iHealth; }
 	void	SetHealth( int amt )	{ m_iHealth = amt; }
@@ -2465,22 +2465,22 @@ inline int CBaseEntity::GetModelIndex( void ) const
 //-----------------------------------------------------------------------------
 inline const Vector& CBaseEntity::WorldAlignMins( ) const
 {
-	Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
-	Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
+	//Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
+	//Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
 	return CollisionProp()->OBBMins();
 }
 
 inline const Vector& CBaseEntity::WorldAlignMaxs( ) const
 {
-	Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
-	Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
+	//Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
+	//Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
 	return CollisionProp()->OBBMaxs();
 }
 
 inline const Vector& CBaseEntity::WorldAlignSize( ) const
 {
-	Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
-	Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
+	//Assert( !CollisionProp()->IsBoundsDefinedInEntitySpace() );
+	//Assert( CollisionProp()->GetCollisionAngles() == vec3_angle );
 	return CollisionProp()->OBBSize();
 }
 

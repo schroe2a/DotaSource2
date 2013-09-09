@@ -22,6 +22,7 @@
 #include "soundenvelope.h"
 #include "weapon_physcannon.h"
 #include "hl2_gamerules.h"
+#include "hl2mp_gamerules.h"
 #include "gameweaponmanager.h"
 #include "vehicle_base.h"
 
@@ -126,7 +127,10 @@ void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
 
-	GetSentences()->Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS ); 
+	if ( GetTeamNumber() == TEAM_COMBINE )
+		GetSentences()->Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS ); 
+	else
+		EmitSound ( "npc_citizen.die", gpGlobals->curtime );
 }
 
 
@@ -280,23 +284,7 @@ void CNPC_CombineS::OnListened()
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 {
-	// Don't bother if we've been told not to, or the player has a megaphyscannon
-	if ( combine_spawn_health.GetBool() == false || PlayerHasMegaPhysCannon() )
-	{
-		BaseClass::Event_Killed( info );
-		return;
-	}
-
-	CBasePlayer *pPlayer = ToBasePlayer( info.GetAttacker() );
-
-	if ( !pPlayer )
-	{
-		CPropVehicleDriveable *pVehicle = dynamic_cast<CPropVehicleDriveable *>( info.GetAttacker() ) ;
-		if ( pVehicle && pVehicle->GetDriver() && pVehicle->GetDriver()->IsPlayer() )
-		{
-			pPlayer = assert_cast<CBasePlayer *>( pVehicle->GetDriver() );
-		}
-	}
+	CHL2MP_Player *pPlayer = ToHL2MPPlayer( info.GetAttacker() );
 
 	if ( pPlayer != NULL )
 	{

@@ -327,11 +327,11 @@ bool CAI_BaseNPC::IsScheduleValid()
 					if (!m_interruptText)
 					{
 						m_interruptText = "(UNKNOWN CONDITION)";
-						/*
+						
 						static const char *pError = "ERROR: Unknown condition!";
 						DevMsg("%s (%s)\n", pError, GetDebugName());
 						m_interruptText = pError;
-						*/
+						
 					}
 
 					if (m_debugOverlays & OVERLAY_TASK_TEXT_BIT)
@@ -470,7 +470,7 @@ CAI_Schedule *CAI_BaseNPC::GetNewSchedule( void )
 		// You may not be in combat state with no enemy!!! (sjb) 11/4/03
 		if( m_NPCState == NPC_STATE_COMBAT && !GetEnemy() )
 		{
-			DevMsg("**ERROR: Combat State with no enemy! slamming to ALERT\n");
+			//DevMsg("**ERROR: Combat State with no enemy! slamming to ALERT\n");
 			SetState( NPC_STATE_ALERT );
 		}
 
@@ -3363,7 +3363,7 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 	case TASK_FACE_PLAYER:
 		{
 			// Get edict for one player
-			CBasePlayer *pPlayer = AI_GetSinglePlayer();
+			CBasePlayer *pPlayer = UTIL_GetNearestVisiblePlayer(this);
 			if ( pPlayer )
 			{
 				GetMotor()->SetIdealYawToTargetAndUpdate( pPlayer->GetAbsOrigin(), AI_KEEP_YAW_SPEED );
@@ -3661,7 +3661,7 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 
 						if( pHint )
 						{
-							CBasePlayer *pPlayer = AI_GetSinglePlayer();
+							CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 							Vector vecGoal = pHint->GetAbsOrigin();
 
 							if( vecGoal.DistToSqr(GetAbsOrigin()) < vecGoal.DistToSqr(pPlayer->GetAbsOrigin()) )

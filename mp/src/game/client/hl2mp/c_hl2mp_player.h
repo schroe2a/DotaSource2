@@ -13,6 +13,7 @@ class C_HL2MP_Player;
 #include "c_basehlplayer.h"
 #include "hl2mp_player_shared.h"
 #include "beamdraw.h"
+#include "c_baseskill.h"
 
 //=============================================================================
 // >> HL2MP_Player
@@ -86,6 +87,37 @@ public:
 
 	virtual void PostThink( void );
 
+	int GetRespawnDelay() { return m_respawnDelay; }
+
+	int GetXP() { return m_iExp; }
+	int GetLevel() { return m_iLevel; } 
+
+	KeyValues	*GetSkillData();
+	KeyValues	*GetBuyData()
+	{
+		KeyValues *data = new KeyValues("data");
+		data->SetInt( "m_iHasPistol", m_iHasPistol );
+		data->SetInt( "m_iHasSMG", m_iHasSMG );
+		data->SetInt( "m_iHasAR2", m_iHasAR2 );
+		data->SetInt( "m_iHasBuckshot", m_iHasBuckshot );
+		data->SetInt( "m_iHas357", m_iHas357 );
+		data->SetInt( "m_iHasXBow", m_iHasXBow );
+		data->SetInt( "m_iHasPhysCannon", m_iHasPhysCannon );
+		data->SetInt( "m_iMoney", m_iMoney );
+		return data;
+	}
+
+	int GetMoney() { return m_iMoney; }
+	bool GetCanShop() { return m_canShop; }
+
+	C_BaseSkill * GetSkill(int index);
+
+	float	maxWalkSpeed;
+	float	maxNormalSpeed;
+	float	maxSprintSpeed;
+
+	int m_HeroType;
+
 private:
 	
 	C_HL2MP_Player( const C_HL2MP_Player & );
@@ -127,6 +159,30 @@ private:
 	CNetworkVar( HL2MPPlayerState, m_iPlayerState );	
 
 	bool m_fIsWalking;
+
+	int  m_respawnDelay;
+
+	int m_iExp, m_iLevel;
+	
+	int m_iSkillPoints;
+	int m_iStatLevel;
+
+	int m_iMoney;
+
+	int m_iHasPistol;
+	int m_iHasSMG;
+	int m_iHasAR2;
+	int m_iHasBuckshot;
+	int m_iHas357;
+	int m_iHasXBow;
+	int m_iHasPhysCannon;
+
+	int m_canShop;
+
+	EHANDLE m_hSkill1;
+	EHANDLE m_hSkill2;
+	EHANDLE m_hSkill3;
+	EHANDLE m_hSkill4;
 };
 
 inline C_HL2MP_Player *ToHL2MPPlayer( CBaseEntity *pEntity )

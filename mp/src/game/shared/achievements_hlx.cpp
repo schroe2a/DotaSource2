@@ -126,9 +126,9 @@ protected:
 		{
 			CBaseEntity *pThrower = pGrenade->GetThrower();
 			CBaseEntity *pOriginalThrower = pGrenade->GetOriginalThrower();
-			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+
 			// check if player was most recent thrower, but the victim was the original thrower
-			if ( ( pPlayer == pThrower ) && ( pOriginalThrower == pVictim ) )
+			if ( pThrower->IsPlayer() && ( pOriginalThrower == pVictim ) )
 			{
 				IncrementCount();
 			}				
