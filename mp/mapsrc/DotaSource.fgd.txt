@@ -1,0 +1,132 @@
+@include "base.fgd"
+@include "hl2mp.fgd"
+
+@NPCClass base(BaseNPC) studio("models/Combine_Soldier.mdl") = npc_creep : "Creep"
+[
+	additionalequipment(choices) : "Weapons" : "weapon_smg1" =
+	[
+		"weapon_ar2" : "AR2"
+		"weapon_shotgun" : "Shotgun"
+		"weapon_smg1" : "SMG1"
+		"weapon_stunstick" : "Stun Stick"
+		"0" : "Nothing"
+	]
+	
+	tacticalvariant(choices) : "Tactical Variant" : "0" =
+	[
+		"0" : "Normal Tactics"
+		"1" : "Pressure the enemy (Keep advancing)"
+		"2" : "Pressure until within 30ft, then normal"
+	]
+	
+	spawnflags(Flags) =
+	[
+		65536   :  "Start LookOff" : 0
+		131072	: "Don't drop grenades" : 0
+		262144  : "Don't drop ar2 alt fire (elite only) " : 0
+		524288  : "Medic" : 0
+		1048576 : "Ammo Resupplier" : 0
+	]
+	
+	NumGrenades(choices) : "Number of Grenades" : "5" =
+	[
+		"0" : "None"
+		"1" : "1"
+		"2" : "2"
+		"3" : "3"
+		"4" : "4"
+		"5" : "5"
+		"999999" : "Unlimited"
+	]
+
+	additionalequipment(choices) : "Weapons" : "0" =
+	[
+		"weapon_smg1" : "SMG1"
+		"weapon_ar2" : "AR2"
+		"weapon_stunstick" : "Stun Stick"
+		"weapon_crowbar" : "Crow Bar"
+		"weapon_shotgun" : "Shotgun"
+		"weapon_rpg" : "RPG"
+		"0"  : "Nothing"
+	]
+
+	ammosupply(choices) : "Ammo to Resupply (if spawnflag set)" : "SMG1" =
+	[
+		"Pistol" : "Pistol"
+		"SMG1" : "SMG1"
+		"SMG1_Grenade" : "SMG1 Grenade"
+		"AR2" : "AR2"
+		"Buckshot" : "Shotgun"
+		"RPG_Round" : "RPG"
+		"Grenade" : "Grenade"
+		"XBowBolt" : "Crossbow Bolt"
+	]
+	ammoamount(integer) : "Amount of ammo to give" : 1
+
+	Team(choices) : "Team" : "2"=
+	[
+		2 : "Combine (default)"
+		3 : "Rebels"
+	]
+
+	output OnPlayerUse(void) : "Fires when a player +USEs the creep"	
+]
+
+@PointClass base(Targetname, Angles) iconsprite("editor/npc_maker.vmt") color(0 0 255) line(255 255 255, targetname, FirstWaypointName) = npc_creep_maker : "Creates creeps at an interval"
+[
+	SpawnFrequency(string) : "Frequency" : "90" : "How often (in seconds) a new group will be spawned."
+	MaxLiveChildren(integer) : "Max Live NPCs" : 5 : "Maximum number of live children allowed at any one time (new ones will not be made until one dies). If set to -1, no limit is applied."
+	
+	Radius(float) : "Radius" : 256 : "Radius around this maker within which NPCs are to be placed. Spawned NPCs will try and find empty space within this radius to spawn."
+	
+	additionalequipment(choices) : "Weapons" : "0" =
+	[
+		"weapon_pistol" : "Pistol"
+		"weapon_ar2" : "AR2"
+		"weapon_shotgun" : "Shotgun"
+		"weapon_smg1" : "SMG1"
+		"0" : "Nothing"
+	]
+	
+	Team(choices) : "Team" : "2"=
+	[
+		2 : "Combine (default)"
+		3 : "Rebels"
+	]
+	
+	GroupSize(integer) : "number of creeps per group" : 5
+	
+	FirstWaypointName(target_destination) : "First Waypoint" : "" : "First Waypoint name for the creeps made here"
+]
+
+@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/assault_point.vmt") color(0 0 255) line(255 255 255, targetname, nextwaypoint) = npc_creep_waypoint : 
+	"(Waypoint) creep waypoint"
+[
+	nextwaypoint(target_destination) : "Next assault point (optional)"	
+]
+
+@SolidClass base(Trigger, Targetname) = trigger_replenish :
+	"A trigger volume that replenishes players on the it's team."
+[	
+]
+
+@SolidClass base(Trigger, Targetname) = dota_shop_trigger :
+	"A trigger volume allows players to open the buy menu."
+[	
+]
+
+@PointClass base(prop_dynamic_base,EnableDisable) sphere(fademindist) sphere(fademaxdist) studioprop() = dota_objective :
+	"the objective for dota"
+[
+	Team(choices) : "Team" : "2"=
+	[
+		2 : "Combine (default)"
+		3 : "Rebels"
+	]
+	
+	CreepMaker(target_destination) : "Creep Maker" : "" : "The Creep Maker disabled when this objective is met"
+]
+
+@PointClass base(Targetname, Angles, BaseFadeProp) studio("models/items/ammocrate_rockets.mdl") = dota_resupply : "Dota Ammo Crate"
+[
+]
