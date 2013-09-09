@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "skybox/sky_day02_10bk"
+	$ignorez 1
+}
