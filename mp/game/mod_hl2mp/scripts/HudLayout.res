@@ -502,4 +502,107 @@
 		"visible"		"0"
 		"enabled"		"0"
 	}
+		
+	HudLevel
+	{
+		"fieldName"		"HudLevel"
+		"xpos"	"250"
+		"ypos"	"432"
+		"wide"	"96"
+		"tall"  "36"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+ 		
+		"text_xpos" "8"
+		"text_ypos" "20"
+		"digit_xpos" "50"
+		"digit_ypos" "2"
+	}
+	HudMoney
+	{
+		"fieldName"		"HudMoney"
+		"xpos"	"350"
+		"ypos"	"432"
+		"wide"	"150"
+		"tall"  "36"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+ 		
+		"text_xpos" "8"
+		"text_ypos" "20"
+		"digit_xpos" "50"
+		"digit_ypos" "2"
+	}
+	HudSkill1
+	{
+		"fieldName"		"HudSkill1"
+		"xpos"	"16"
+		"ypos"	"375"
+		"wide"	"150"
+		"tall"  "36"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+ 		
+		"text_xpos" "8"
+		"text_ypos" "20"
+		"digit_xpos" "100"
+		"digit_ypos" "2"
+	}
+	HudSkill2
+	{
+		"fieldName"		"HudSkill2"
+		"xpos"	"166"
+		"ypos"	"375"
+		"wide"	"150"
+		"tall"  "36"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+ 		
+		"text_xpos" "8"
+		"text_ypos" "20"
+		"digit_xpos" "100"
+		"digit_ypos" "2"
+	}
+	HudSkill3
+	{
+		"fieldName"		"HudSkill3"
+		"xpos"	"316"
+		"ypos"	"375"
+		"wide"	"150"
+		"tall"  "36"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+ 		
+		"text_xpos" "8"
+		"text_ypos" "20"
+		"digit_xpos" "100"
+		"digit_ypos" "2"
+	}
+	HudSkill4
+	{
+		"fieldName"		"HudSkill4"
+		"xpos"	"466"
+		"ypos"	"375"
+		"wide"	"150"
+		"tall"  "36"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+ 		
+		"text_xpos" "8"
+		"text_ypos" "20"
+		"digit_xpos" "100"
+		"digit_ypos" "2"
+	}
 }
