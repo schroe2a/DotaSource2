@@ -1,43 +1,22 @@
-               SOURCE 1 SDK LICENSE
+Project Description
+By moving the AI logic from Half-life 2 single player into a multiplayer mod, we have brought some of the concepts of DotA into a FPS experience.
 
-Source SDK Copyright(c) Valve Corp.  
+Welcome to Nova Prospekt
 
-THIS DOCUMENT DESCRIBES A CONTRACT BETWEEN YOU AND VALVE 
-CORPORATION ("Valve").  PLEASE READ IT BEFORE DOWNLOADING OR USING 
-THE SOURCE ENGINE SDK ("SDK"). BY DOWNLOADING AND/OR USING THE 
-SOURCE ENGINE SDK YOU ACCEPT THIS LICENSE. IF YOU DO NOT AGREE TO 
-THE TERMS OF THIS LICENSE PLEASE DON�T DOWNLOAD OR USE THE SDK.  
+If you haven’t played Half-life 2 then you’re just silly, but you also wouldn’t know that Nova Prospect is a prison near City 17, and an important stronghold for the combine. The prison has become a battlefield for a first-person shooter version of DotA. Players pick a hero from either combine or rebels. The game starts when everyone types “ready” into the chat window. Each team starts in their own base and the “creeps” (in this case combine and rebel soldiers) start making their way down the three paths. The object is to push the front lines of the battle into the other team’s base and close the gates to keep them out of the prison. (Yes, you’re trying to keep each other out of prison)
 
-  You may, free of charge, download and use the SDK to develop a modified Valve game 
-running on the Source engine.  You may distribute your modified Valve game in source and 
-object code form, but only for free. Terms of use for Valve games are found in the Steam 
-Subscriber Agreement located here: http://store.steampowered.com/subscriber_agreement/ 
+Heroes - Pick one of 10 heroes, each with unique skills.
 
-  You may copy, modify, and distribute the SDK and any modifications you make to the 
-SDK in source and object code form, but only for free.  Any distribution of this SDK must 
-include this LICENSE file and thirdpartylegalnotices.txt.  
- 
-  Any distribution of the SDK or a substantial portion of the SDK must include the above 
-copyright notice and the following: 
+Experience - Kill stuff to level up and upgrade your skills or stats.
 
-    DISCLAIMER OF WARRANTIES.  THE SOURCE SDK AND ANY 
-    OTHER MATERIAL DOWNLOADED BY LICENSEE IS PROVIDED 
-    "AS IS".  VALVE AND ITS SUPPLIERS DISCLAIM ALL 
-    WARRANTIES WITH RESPECT TO THE SDK, EITHER EXPRESS 
-    OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED 
-    WARRANTIES OF MERCHANTABILITY, NON-INFRINGEMENT, 
-    TITLE AND FITNESS FOR A PARTICULAR PURPOSE.  
+Money - Kill something and it’ll drop a little grey egg-carton thing. (Best model I could find quickly) pick it up! It’s money! Save up and buy better weapons or increased ammo capacity
 
-    LIMITATION OF LIABILITY.  IN NO EVENT SHALL VALVE OR 
-    ITS SUPPLIERS BE LIABLE FOR ANY SPECIAL, INCIDENTAL, 
-    INDIRECT, OR CONSEQUENTIAL DAMAGES WHATSOEVER 
-    (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF 
-    BUSINESS PROFITS, BUSINESS INTERRUPTION, LOSS OF 
-    BUSINESS INFORMATION, OR ANY OTHER PECUNIARY LOSS) 
-    ARISING OUT OF THE USE OF OR INABILITY TO USE THE 
-    ENGINE AND/OR THE SDK, EVEN IF VALVE HAS BEEN 
-    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.  
- 
-       
-If you would like to use the SDK for a commercial purpose, please contact Valve at 
-sourceengine@valvesoftware.com.
+“Creeps” - these are the grunt soldiers you kill by the hundreds. They exhibit smart squad based behavior from the single player including flanking, cover-fire, throwing grenades and stuff. A new group spawns for each team in each lane every 45 seconds.
+
+Guardians: (think ‘tower’ from DotA) each team has an antlion guardian defending each of their 3 gates. They are deadly killers and need to be eliminated to push your way on to the enemy gates. They also summon lots of little antlions.
+
+Gates - the object of the game. If you hit them 30 times with your stun-stick/crowbar they will close and enemy creeps will stop spawning in that lane. Close all three and you win! Note: You have to hit the gate doors themselves, not the metal walls next to them.
+
+The Base – The area outside the prison is where your team starts. There are health and armor recharge units, an ammo box and defensive turrets there. If you are in the area near the ammo box you can open the buy menu, and spend your money. The turrets are deadly and will kill anyone who tries to go too far into the other team’s base.
+
+Ammo Boxes – These are spread out on the map. Use them to get bullets for the weapons you bought. You can also open the buy menu while you have an ammo box open.
