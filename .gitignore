@@ -2,7 +2,7 @@
 
 # Visual Studio 
 *.suo
-*.user
+#*.user
 *.sln.docstates
 *.obj
 *.pch
