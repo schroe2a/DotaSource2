@@ -1,0 +1,14 @@
+[vpc crc file version 2]
+05d8dbc5 C:\Projects\GitHub\DotaSource2\mp\src\devtools\bin\vpc.exe
+_Nc_/vpcgame:hl2mp_
+e5d209f4 tier1.vpc
+d1483a91 ..\vpc_scripts\source_lib_base.vpc
+d752cf80 ..\vpc_scripts\platform_dirs.vpc
+6c4a5ff1 ..\vpc_scripts\source_base.vpc
+61ee09ea ..\vpc_scripts\source_lib_win32_base.vpc
+486b766d ..\vpc_scripts\version.vpc
+5ab6f125 ..\vpc_scripts\source_lib_win32_debug.vpc
+0219be2f ..\vpc_scripts\source_lib_win32_release.vpc
+fb1fce92 ..\vpc_scripts\source_win32_base.vpc
+346bda4a ..\vpc_scripts\source_video_base.vpc
+30bf2216 ..\vpc_scripts\definitions\win32_2010.def

@@ -17,10 +17,10 @@ ipch
 *.sdf
 *.opensdf
 *.idb
-*.vcxproj
-*.sln
-*.vpc_crc
-*.filters
+#*.vcxproj
+#*.sln
+#*.vpc_crc
+#*.filters
 *.unsuccessfulbuild
 
 # OSX/Linux build products
@@ -67,7 +67,7 @@ mp/game/mod_hl2mp/maps
 mp/game/mod_hl2mp/modelsounds.cache
 mp/game/mod_hl2mp/sound/sound.cache
 mp/game/mod_hl2mp/stats.txt
-mp/game/mod_hl2mp/user_custom/c1/*.dat
+mp/game/mod_hl2mp/user_custom/*/*.dat
 mp/game/mod_hl2mp/voice_ban.dt
 *.sentinel
 mp/src/materialsystem/stdshaders/Debug_dx9_mod_hl2mp
