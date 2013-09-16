@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="mp-game-modhl2mp">
+      <UniqueIdentifier>{3133978e-e356-491a-8832-480696a7fb44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\cfg">
+      <UniqueIdentifier>{10faab2c-2f82-438a-a863-0cf1c5eb2230}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\materials">
+      <UniqueIdentifier>{68c146b4-aa52-475f-9b96-01f3e9643637}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\materials\VGUI">
+      <UniqueIdentifier>{39828c24-dcdb-496d-b57a-1c294a8ff2da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\materials\VGUI\logos">
+      <UniqueIdentifier>{b202e374-68e1-4a2c-9de1-24e29046087b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\materials\VGUI\logos\UI">
+      <UniqueIdentifier>{e96595ee-64c1-47b7-ac9d-975dcd7423a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\materials\skybox">
+      <UniqueIdentifier>{243dde6f-7d73-4d89-9e77-6c0d3948b643}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\materials\models">
+      <UniqueIdentifier>{4e753793-de8a-498f-afbd-aee5e10108c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\materials\models\Freeman">
+      <UniqueIdentifier>{b3c27873-dc53-4ee3-9b5f-a46b153c209a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\materials\models\cf_characters">
+      <UniqueIdentifier>{bcd24699-aeda-4fb3-b866-4e29107a6c63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\resource">
+      <UniqueIdentifier>{f8914f4f-759e-4d9f-b984-67870ee14340}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\resource\Classes">
+      <UniqueIdentifier>{9f8c7ad2-4117-4674-9792-9492e2a5fc6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\resource\ui">
+      <UniqueIdentifier>{731cbc9c-0725-4b3d-bed6-53ac3d87b434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-game-modhl2mp\scripts">
+      <UniqueIdentifier>{adb88980-4620-4e66-9ca7-f90d83ab29cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mp-mapsrc">
+      <UniqueIdentifier>{d2010724-2e1f-4bc4-9fac-8f469c69380f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\game\mod_hl2mp\gameinfo.txt">
+      <Filter>mp-game-modhl2mp</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\cfg\skill.cfg">
+      <Filter>mp-game-modhl2mp\cfg</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\cfg\skill_manifest.cfg">
+      <Filter>mp-game-modhl2mp\cfg</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\example_model_material.vmt">
+      <Filter>mp-game-modhl2mp\materials</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\combine_soldier.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Male_01.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_canned.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_combine.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_cop.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_dog.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_freeman.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_head.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_lambda.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_plumbed.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_soldier.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\logos\UI\spray_canned.vmt">
+      <Filter>mp-game-modhl2mp\materials\VGUI\logos\UI</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10bk.vmt">
+      <Filter>mp-game-modhl2mp\materials\skybox</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10dn.vmt">
+      <Filter>mp-game-modhl2mp\materials\skybox</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10ft.vmt">
+      <Filter>mp-game-modhl2mp\materials\skybox</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10lf.vmt">
+      <Filter>mp-game-modhl2mp\materials\skybox</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10rt.vmt">
+      <Filter>mp-game-modhl2mp\materials\skybox</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10up.vmt">
+      <Filter>mp-game-modhl2mp\materials\skybox</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\Freeman\glass.vmt">
+      <Filter>mp-game-modhl2mp\materials\models\Freeman</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\Freeman\gordonheadmap.vmt">
+      <Filter>mp-game-modhl2mp\materials\models\Freeman</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\Freeman\hevsuit_sheet.vmt">
+      <Filter>mp-game-modhl2mp\materials\models\Freeman</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\cf_characters\glass.vmt">
+      <Filter>mp-game-modhl2mp\materials\models\cf_characters</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\cf_characters\gordonheadmap.vmt">
+      <Filter>mp-game-modhl2mp\materials\models\cf_characters</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\cf_characters\hevsuit_sheet.vmt">
+      <Filter>mp-game-modhl2mp\materials\models\cf_characters</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\resource\mod_hl2mp_english.txt">
+      <Filter>mp-game-modhl2mp\resource</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\ChapterBackgrounds.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\game.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\game_sounds_player.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\game_sounds_weapons.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\HudAnimations.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\kb_act.lst">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\kb_def.lst">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\kb_keys.lst">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\launcher.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\mod_textures.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\soundscapes_labs.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\soundscapes_manifest.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\soundscapes_streetwar.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\soundscapes_strike.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_357.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_ar2.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_crossbow.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_crowbar.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_cubemap.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_frag.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_physcannon.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_pistol.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_rpg.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_shotgun.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_slam.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_smg1.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_stunstick.txt">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </None>
+    <None Include="..\..\mapsrc\d2_prison_01_d.vmf">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\d2_prison_02_d.vmf">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\d2_prison_03_d.vmf">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\d2_prison_04_d.vmf">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\d2_prison_05_d.vmf">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\d3_c17_11_d.vmf">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\DotaSource.fgd">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\DotaSource.fgd.txt">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\dota_prospekt.prt">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\dota_prospekt.vmf">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+    <None Include="..\..\mapsrc\dota_prospekt.vmx">
+      <Filter>mp-mapsrc</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\..\game\mod_hl2mp\resource\ClientScheme.res">
+      <Filter>mp-game-modhl2mp\resource</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\GameMenu.res">
+      <Filter>mp-game-modhl2mp\resource</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\modevents.res">
+      <Filter>mp-game-modhl2mp\resource</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\ObjectControlPanelScheme.res">
+      <Filter>mp-game-modhl2mp\resource</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\PDAControlPanelScheme.res">
+      <Filter>mp-game-modhl2mp\resource</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\TrackerScheme.res">
+      <Filter>mp-game-modhl2mp\resource</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\alyx.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\barney.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\breen.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\eli.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\elite.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\freeman.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\gman.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\metropolice.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\monk.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\mossman.res">
+      <Filter>mp-game-modhl2mp\resource\Classes</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\BuyMenu.res">
+      <Filter>mp-game-modhl2mp\resource\ui</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\classmenu_com.res">
+      <Filter>mp-game-modhl2mp\resource\ui</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\classmenu_reb.res">
+      <Filter>mp-game-modhl2mp\resource\ui</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\MOTD.res">
+      <Filter>mp-game-modhl2mp\resource\ui</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\ScoreBoard.res">
+      <Filter>mp-game-modhl2mp\resource\ui</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\SkillMenu.res">
+      <Filter>mp-game-modhl2mp\resource\ui</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\Teammenu.res">
+      <Filter>mp-game-modhl2mp\resource\ui</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\scripts\HudLayout.res">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </Resource>
+    <Resource Include="..\..\game\mod_hl2mp\scripts\LauncherScheme.res">
+      <Filter>mp-game-modhl2mp\scripts</Filter>
+    </Resource>
+  </ItemGroup>
+</Project>

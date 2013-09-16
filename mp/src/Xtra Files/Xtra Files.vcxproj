@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4CD43729-57C0-4B3F-AF8A-025301DE07D9}</ProjectGuid>
+    <RootNamespace>XtraFiles</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\..\game\mod_hl2mp\cfg\skill.cfg">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\cfg\skill_manifest.cfg">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\gameinfo.txt" />
+    <None Include="..\..\game\mod_hl2mp\materials\example_model_material.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\cf_characters\glass.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\cf_characters\gordonheadmap.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\cf_characters\hevsuit_sheet.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\Freeman\glass.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\Freeman\gordonheadmap.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\models\Freeman\hevsuit_sheet.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10bk.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10dn.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10ft.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10lf.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10rt.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\skybox\sky_day02_10up.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\combine_soldier.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\logos\UI\spray_canned.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Male_01.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_canned.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_combine.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_cop.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_dog.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_freeman.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_head.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_lambda.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_plumbed.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\materials\VGUI\Spray_soldier.vmt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\resource\mod_hl2mp_english.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\ChapterBackgrounds.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\game.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\game_sounds_player.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\game_sounds_weapons.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\HudAnimations.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\kb_act.lst">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\kb_def.lst">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\kb_keys.lst">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\game\mod_hl2mp\scripts\launcher.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\mod_textures.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\soundscapes_labs.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\soundscapes_manifest.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\soundscapes_streetwar.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\soundscapes_strike.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_357.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_ar2.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_crossbow.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_crowbar.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_cubemap.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_frag.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_physcannon.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_pistol.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_rpg.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_shotgun.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_slam.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_smg1.txt" />
+    <None Include="..\..\game\mod_hl2mp\scripts\weapon_stunstick.txt" />
+    <None Include="..\..\mapsrc\d2_prison_01_d.vmf">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\mapsrc\d2_prison_02_d.vmf">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\mapsrc\d2_prison_03_d.vmf">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\mapsrc\d2_prison_04_d.vmf">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\mapsrc\d2_prison_05_d.vmf">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\mapsrc\d3_c17_11_d.vmf">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\mapsrc\DotaSource.fgd">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\mapsrc\DotaSource.fgd.txt" />
+    <None Include="..\..\mapsrc\dota_prospekt.prt">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\mapsrc\dota_prospekt.vmf">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\mapsrc\dota_prospekt.vmx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\alyx.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\barney.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\breen.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\eli.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\elite.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\freeman.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\gman.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\metropolice.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\monk.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\Classes\mossman.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\ClientScheme.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\GameMenu.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\modevents.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\ObjectControlPanelScheme.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\PDAControlPanelScheme.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\TrackerScheme.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\BuyMenu.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\classmenu_com.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\classmenu_reb.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\MOTD.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\ScoreBoard.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\SkillMenu.res" />
+    <Resource Include="..\..\game\mod_hl2mp\resource\ui\Teammenu.res" />
+    <Resource Include="..\..\game\mod_hl2mp\scripts\HudLayout.res" />
+    <Resource Include="..\..\game\mod_hl2mp\scripts\LauncherScheme.res" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
