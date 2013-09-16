@@ -40,7 +40,10 @@ bool CItemMoney::MyTouch( CBasePlayer *pPlayer )
 
 void DropMoney( const Vector &vecOrigin, int amount, CBasePlayer * pTaker )
 {
-	Vector newOrigin = vecOrigin + RandomVector(-4,4);	
+	Vector offsetVec = RandomVector(-4.0, 4.0);
+	offsetVec.z = abs(offsetVec.z);
+	//Vector newOrigin = vecOrigin + RandomVector(-4,4);
+	Vector newOrigin = vecOrigin + offsetVec;
 
 	CItemMoney * money = (CItemMoney*)CBaseEntity::Create( "item_money", newOrigin, vec3_angle );
 	if ( money )
@@ -52,15 +55,20 @@ void DropMoney( const Vector &vecOrigin, int amount, CBasePlayer * pTaker )
 		money->m_iAmount = amount;
 		money->m_taker = pTaker;
 
-		Vector			vel		= RandomVector( -64.0f, 64.0f );
-		AngularImpulse	angImp	= RandomAngularImpulse( -300.0f, 300.0f );
+		//==================================================================================
+		// ItemMoney is not a VPhysObject so, the following is actually dead code... for now
+		//==================================================================================
+		//IPhysicsObject *pPhysicsObject = money->VPhysicsGetObject();
+		//if ( pPhysicsObject )
+		//{
+		//	Vector			vel		= RandomVector( -64.0f, 64.0f );
+		//	vel.z = abs(vel.z);
+		//	AngularImpulse	angImp	= RandomAngularImpulse( -300.0f, 300.0f );
 
-		vel[2] = 0.0f;
-
-		IPhysicsObject *pPhysicsObject = money->VPhysicsGetObject();
-		if ( pPhysicsObject )
-		{
-			pPhysicsObject->AddVelocity( &vel, &angImp );
-		}
+		//	// Angular velocity is always applied in local space in vphysics
+		//	AngularImpulse localAngImp;
+		//	pPhysicsObject->WorldToLocalVector( &localAngImp, angImp );
+		//	pPhysicsObject->AddVelocity( &vel, &localAngImp );
+		//}
 	}
 }
