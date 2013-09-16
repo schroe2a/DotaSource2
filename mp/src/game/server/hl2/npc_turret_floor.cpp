@@ -254,8 +254,8 @@ void CNPC_FloorTurret::Precache( void )
 	PrecacheScriptSound( "NPC_FloorTurret.Retract");
 	PrecacheScriptSound( "NPC_FloorTurret.Alarm");
 	PrecacheScriptSound( "NPC_FloorTurret.Ping");
-	PrecacheScriptSound( "NPC_FloorTurret.DryFire");
-	PrecacheScriptSound( "NPC_FloorTurret.Destruct" );
+	//PrecacheScriptSound( "NPC_FloorTurret.DryFire");
+	PrecacheScriptSound( "NPC_FloorTurret.Die" );
 
 #ifdef HL2_EPISODIC
 	PrecacheParticleSystem( "explosion_turret_break" );
@@ -698,7 +698,7 @@ bool CNPC_FloorTurret::UpdateFacing( void )
 
 void CNPC_FloorTurret::DryFire( void )
 {
-	EmitSound( "NPC_FloorTurret.DryFire");
+	//EmitSound( "NPC_FloorTurret.DryFire");
 	EmitSound( "NPC_FloorTurret.Activate" );
 
  	if ( RandomFloat( 0, 1 ) > 0.5 )
@@ -2040,7 +2040,7 @@ void CNPC_FloorTurret::BreakThink( void )
 	// K-boom
 	RadiusDamage( CTakeDamageInfo( this, this, 15.0f, DMG_BLAST ), vecOrigin, (10*12), CLASS_NONE, this );
 
-	EmitSound( "NPC_FloorTurret.Destruct" );
+	EmitSound( "NPC_FloorTurret.Die" );
 
 	breakablepropparams_t params( GetAbsOrigin(), GetAbsAngles(), vec3_origin, RandomAngularImpulse( -800.0f, 800.0f ) );
 	params.impactEnergyScale = 1.0f;

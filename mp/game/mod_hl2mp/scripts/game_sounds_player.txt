@@ -330,3 +330,14 @@
 		"wave"	"*vo/npc/$gender01/pain09.wav"
 	}
 }
+
+"gman_misc.gman_03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"*vo/gman_misc/gman_03.wav"
+}

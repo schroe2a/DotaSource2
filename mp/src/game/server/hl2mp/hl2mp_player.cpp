@@ -324,7 +324,7 @@ void CHL2MP_Player::Precache( void )
 	PrecacheScriptSound( "citadel.eli_genocide" );
 	PrecacheScriptSound( "ravenholm.cartrap_iamgrig" );
 
-	PrecacheScriptSound( "npc_gman.gman_03" );
+	PrecacheScriptSound( "gman_misc.gman_03" );
 	PrecacheScriptSound( "novaprospekt.mo_onlyway" );
 	PrecacheScriptSound( "prison.sradio_D7_controlroom" );
 	PrecacheScriptSound( "NPC_MetroPolice.Cupcop.Intro" );
@@ -513,7 +513,7 @@ void CHL2MP_Player::PlaySpawnSound( const char *pModelName )
 	else if ( Q_stristr(pModelName, "monk" ) )
 		EmitSound( "ravenholm.cartrap_iamgrig" );
 	else if ( Q_stristr(pModelName, "gman" ) )
-		EmitSound("npc_gman.gman_03");
+		EmitSound("gman_misc.gman_03");
 	else if ( Q_stristr(pModelName, "mossman" ) )
 		EmitSound("novaprospekt.mo_onlyway");
 	else if ( Q_stristr(pModelName, "elite" ) )

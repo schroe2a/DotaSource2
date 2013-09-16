@@ -4513,7 +4513,7 @@ void CGameMovement::Duck( void )
 		if ( ( player->m_Local.m_flDuckJumpTime == 0.0f ) && ( fabs(player->GetViewOffset().z - GetPlayerViewOffset( false ).z) > 0.1 ) )
 		{
 			// we should rarely ever get here, so assert so a coder knows when it happens
-			Assert(0);
+			//Assert(0);
 			DevMsg( 1, "Restoring player view height\n" );
 
 			// set the eye height to the non-ducked height

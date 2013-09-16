@@ -301,7 +301,7 @@ void CNPC_Combine::Precache()
 	PrecacheScriptSound( "npc_citizen.gordead_ques02" );
 	PrecacheScriptSound( "npc_citizen.die" );
 	PrecacheScriptSound( "npc_citizen.leadtheway02" );
-	PrecacheScriptSound( "npc_citizen.headsup2" );
+	PrecacheScriptSound( "npc_citizen.headsup02" );
 	PrecacheScriptSound( "npc_citizen.gordead_ques07" );
 	
 	BaseClass::Precache();
@@ -2430,7 +2430,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		case EVENT_WEAPON_THROW:
 			{
 				if ( GetTeamNumber() != TEAM_COMBINE )
-					EmitSound( "npc_citizen.headsup2" );
+					EmitSound( "npc_citizen.headsup02" );
 
 				Vector vecSpin;
 				vecSpin.x = random->RandomFloat( -1000.0, 1000.0 );
