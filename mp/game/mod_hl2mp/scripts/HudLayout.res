@@ -605,4 +605,15 @@
 		"digit_xpos" "100"
 		"digit_ypos" "2"
 	}
+
+	overview
+	{
+		"fieldname"				"overview"
+		"visible"				"1"
+		"enabled"				"1"
+		"xpos"					"0"
+		"ypos"					"0"
+		"wide"					"480"
+		"tall"					"0"
+	}
 }

@@ -1,0 +1,4 @@
+"clamps" "1"
+"clampt" "1"
+"nocompress" "1"
+"nomip" "1"

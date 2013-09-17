@@ -1,0 +1,1 @@
+"D:\Steam\steamapps\common\Source SDK Base 2013 Multiplayer\bin\vtex.exe" -game "C:\Projects\GitHub\DotaSource2\mp\game\mod_hl2mp" -outdir "C:\Projects\GitHub\DotaSource2\mp\game\mod_hl2mp\materials\overviews" dota_prospekt.tga

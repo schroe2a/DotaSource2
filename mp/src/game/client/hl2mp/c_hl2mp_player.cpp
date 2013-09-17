@@ -185,6 +185,8 @@ void C_HL2MP_Player::Initialize( void )
 	{
 		SetPoseParameter( hdr, i, 0.0 );
 	}
+
+	engine->ClientCmd( "overview_mode 1" );
 }
 
 CStudioHdr *C_HL2MP_Player::OnNewModel( void )
