@@ -707,7 +707,7 @@ void CNPC_AntlionGuard::Precache( void )
 	PrecacheScriptSound( "NPC_AntlionGuard.GrowlIdle" );
 	PrecacheScriptSound( "NPC_AntlionGuard.BreathSound" );
 	PrecacheScriptSound( "NPC_AntlionGuard.Confused" );
-	PrecacheScriptSound( "NPC_AntlionGuard.Fallover" );
+	//PrecacheScriptSound( "NPC_AntlionGuard.Fallover" );
 
 	PrecacheScriptSound( "NPC_AntlionGuard.FrustratedRoar" );
 
@@ -1942,7 +1942,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 		else
 		{
 			duration = 1.0f;
-			EmitSound( "NPC_AntlionGuard.FrustratedRoar" );
+			//EmitSound( "NPC_AntlionGuard.FrustratedRoar" );
 			ENVELOPE_CONTROLLER.SoundFadeOut( m_pGrowlHighSound, 0.5f, false );
 		}
 		

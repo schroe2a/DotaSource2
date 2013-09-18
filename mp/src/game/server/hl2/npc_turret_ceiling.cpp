@@ -263,11 +263,11 @@ void CNPC_CeilingTurret::Precache( void )
 	PrecacheScriptSound( "NPC_CeilingTurret.Move" );
 	PrecacheScriptSound( "NPC_CeilingTurret.Active" );
 	PrecacheScriptSound( "NPC_CeilingTurret.Alert" );
-	PrecacheScriptSound( "NPC_CeilingTurret.ShotSounds" );
+	PrecacheScriptSound( "NPC_CeilingTurret.Shoot" );
 	PrecacheScriptSound( "NPC_CeilingTurret.Ping" );
 	PrecacheScriptSound( "NPC_CeilingTurret.Die" );
 
-	PrecacheScriptSound( "NPC_FloorTurret.DryFire" );
+	//PrecacheScriptSound( "NPC_FloorTurret.DryFire" );
 	
 	BaseClass::Precache();
 }
@@ -810,7 +810,7 @@ void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnem
 {
 	if ( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
 	{
-		EmitSound( "NPC_FloorTurret.DryFire");
+		//EmitSound( "NPC_FloorTurret.DryFire");
 		EmitSound( "NPC_CeilingTurret.Activate" );
 
   		if ( RandomFloat( 0, 1 ) > 0.7 )

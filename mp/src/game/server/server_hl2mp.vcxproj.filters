@@ -3622,6 +3622,9 @@
     <ClCompile Include="..\shared\hl2mp\ItemDef.cpp">
       <Filter>Source Files\HL2MP</Filter>
     </ClCompile>
+    <ClCompile Include="hl2\npc_fastzombie.cpp">
+      <Filter>Source Files\HL2 DLL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

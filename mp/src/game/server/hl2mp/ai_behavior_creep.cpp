@@ -243,18 +243,18 @@ void CAI_CreepBehavior::StartTask( const Task_t *pTask )
 
 	case TASK_CREEP_FACE_ASSAULT_POINT:
 		{
-			if( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
-			{
+			//if( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+			//{
 				// If I can already fight when I arrive, don't bother running any facing code. Let
 				// The combat AI do that. Turning here will only make the NPC look dumb in a combat
 				// situation because it will take time to turn before attacking.
 				TaskComplete();
-			}
-			else
-			{
-				GetMotor()->SetIdealYaw( m_hAssaultPoint->GetAbsAngles().y );
-				GetOuter()->SetTurnActivity(); 
-			}
+			//}
+			//else
+			//{
+			//	GetMotor()->SetIdealYaw( m_hAssaultPoint->GetAbsAngles().y );
+			//	GetOuter()->SetTurnActivity(); 
+			//}
 		}
 		break;
 
@@ -356,7 +356,7 @@ void CAI_CreepBehavior::ClearAssaultPoint( void )
 		DotaObjective *obj = NULL;
 		while( (obj = dynamic_cast< DotaObjective * >(gEntList.FindEntityByClassname( obj, "dota_objective" ))) != NULL )
 		{
-			if( !obj->m_bMet )
+			if( !obj->m_bMet && (GetOuter()->GetTeamNumber() != obj->GetTeamNumber()))
 			{
 				break;
 			}
