@@ -9,6 +9,7 @@ public:
 
 	CreepMaker(void);
 
+	void CheckConfig( void );
 	void Precache( void );
 	void Spawn( void );
 	void MakerThink( void );
