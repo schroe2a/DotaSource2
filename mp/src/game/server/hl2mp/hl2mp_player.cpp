@@ -29,7 +29,8 @@
 
 #include "engine/IEngineSound.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
-
+#include "vgui/ISurface.h"
+#include <vgui_controls/Controls.h>
 #include "ilagcompensationmanager.h"
 
 int g_iLastCitizenModel = 0;
@@ -239,10 +240,13 @@ void CHL2MP_Player::CheckLevel()
 	if ( bShouldLevel )
 	{
 		OnStatsChanged(); // and then adjust their settings (speed, health, damage) to reflect the change
-
-		ClientPrint( this, HUD_PRINTTALK, UTIL_VarArgs("You have reached level %i\n", GetLevel()) ); // write it on their screen
-		 
+		ClientPrint( this, HUD_PRINTTALK, UTIL_VarArgs("You have reached level %i\n", GetLevel()) ); // write it on their screen 
 		UTIL_ClientPrintAll( HUD_PRINTCONSOLE, UTIL_VarArgs("%s has reached level %i\n", GetPlayerName(), GetLevel()) ); // write it in everyone's console
+		if (m_iLevel!=6 && m_iLevel!=10 && m_iLevel!=16) { // Issue #12: AMP - 2013-09-22 - Play sound when leveling up
+			vgui::surface()->PlaySound( "player/levelUp1.mp3" ); // Play normal level-up sound
+		} else {
+			vgui::surface()->PlaySound( "player/levelUp2.mp3" ); // Play "ultimate" level-up sound
+		}
 	}
 }
 
