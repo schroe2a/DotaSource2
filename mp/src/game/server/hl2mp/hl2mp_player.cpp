@@ -483,7 +483,9 @@ void CHL2MP_Player::Spawn(void)
 	if ( GetTeamNumber() != TEAM_SPECTATOR )
 	{
 		StopObserverMode();
-		PlaySpawnSound( STRING( GetModelName() ) );
+		if (m_bReady) { // Issue #14: AMP - 2013-09-23 - Only play spawn sound after the player is "ready"
+			PlaySpawnSound( STRING( GetModelName() ) );
+		}
 
 		this->SetHealth( this->GetMaxHealth() );
 		this->SetArmorValue( this->GetMaxHealth() );
