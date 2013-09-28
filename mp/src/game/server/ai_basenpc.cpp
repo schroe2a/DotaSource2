@@ -10493,12 +10493,12 @@ bool CAI_BaseNPC::FOkToMakeSound( int soundPriority )
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::JustMadeSound( int soundPriority, float flSoundLength )
 {
-	m_flSoundWaitTime = gpGlobals->curtime + flSoundLength + random->RandomFloat(1.5, 2.0);
+	m_flSoundWaitTime = gpGlobals->curtime + flSoundLength + random->RandomFloat(2.0, 5.0); // Issue #20: AMP - 2013-09-28 - Make AI players not so chatty
 	m_nSoundPriority = soundPriority;
 
 	if (m_pSquad)
 	{
-		m_pSquad->JustMadeSound( soundPriority, gpGlobals->curtime + flSoundLength + random->RandomFloat(1.5, 2.0) );
+		m_pSquad->JustMadeSound( soundPriority, gpGlobals->curtime + flSoundLength + random->RandomFloat(2.0, 5.0) );
 	}
 }
 
