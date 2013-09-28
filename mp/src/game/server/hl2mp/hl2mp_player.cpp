@@ -125,9 +125,10 @@ CON_COMMAND( addmoney, "gives money" )
 CON_COMMAND( skill1, "execute your skill")
 {
 	CHL2MP_Player *pPlayer = ToHL2MPPlayer( UTIL_GetCommandClient() );
-	if ( pPlayer && pPlayer->GetSkill(1) && pPlayer->IsAlive() )
-	{
+	if ( pPlayer && pPlayer->GetSkill(1) && pPlayer->IsAlive() && pPlayer->IsReady() ) {
 		pPlayer->GetSkill(1)->Use();
+	} else if ( pPlayer && !pPlayer->IsReady()) { // Issue #21: AMP - 2013-09-28 - Make skill1 say "ready" if player not yet ready
+		engine->ClientCommand( pPlayer->edict(), "say ready");
 	}
 }
 CON_COMMAND( skill2, "execute your skill")

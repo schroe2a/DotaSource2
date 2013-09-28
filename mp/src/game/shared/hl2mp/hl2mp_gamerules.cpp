@@ -1027,6 +1027,7 @@ float CHL2MPRules::GetMapRemainingTime()
 void CHL2MPRules::Precache( void )
 {
 	CBaseEntity::PrecacheScriptSound( "AlyxEmp.Charge" );
+	CBaseEntity::PrecacheScriptSound( "Dota.Ready" ); // Issue #21: AMP - 2013-09-28 - Make skill1 say "ready" if player not yet ready
 }
 
 bool CHL2MPRules::ShouldCollide( int collisionGroup0, int collisionGroup1 )
@@ -1742,6 +1743,7 @@ void CHL2MPRules::CheckChatForReadySignal( CHL2MP_Player *pPlayer, const char *c
 			if( !pPlayer->IsReady() )
 			{
 				pPlayer->SetReady( true );
+				pPlayer->EmitSound( "Dota.Ready"  ); // Issue #21: AMP - 2013-09-28 - Make skill1 say "ready" if player not yet ready
 			}
 		}
 	}
@@ -1809,7 +1811,8 @@ void CHL2MPRules::CheckAllPlayersReady( void )
 		{
 			CSingleUserRecipientFilter user( pPlayer );
 			user.MakeReliable();
-			UTIL_ClientPrintFilter( user, HUD_PRINTCENTER, "Type ""READY"" in the chat to begin the game" );
+
+			UTIL_ClientPrintFilter( user, HUD_PRINTCENTER, "Hit [skill1] button or say ""READY"" in chat to begin the game" );
 			return;
 		}
 		else

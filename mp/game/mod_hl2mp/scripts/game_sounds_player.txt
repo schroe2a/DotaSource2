@@ -341,3 +341,13 @@
 
 	"wave"			"*vo/gman_misc/gman_03.wav"
 }
+
+// DOTA sounds
+"Dota.Ready"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"VOL_NORM"
+	"soundlevel"  "SNDLVL_NORM"
+
+	"wave"	"player/ready1.mp3"
+}
