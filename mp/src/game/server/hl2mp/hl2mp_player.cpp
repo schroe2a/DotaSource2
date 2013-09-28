@@ -1047,6 +1047,7 @@ bool CHL2MP_Player::HandleCommand_JoinTeam( int team )
 	{
 		StopObserverMode();
 		State_Transition(STATE_ACTIVE);
+		LockPlayerInPlace(); // Issue #22: AMP - 2013-09-28 - Fix jitter while selecting hero
 		// popup classmenu when joining a team
 	   if ( team == 2 )
 	   {
@@ -1101,7 +1102,8 @@ bool CHL2MP_Player::HandleCommand_JoinClass( int hero )
 	CreateSkills( m_HeroType );
 
 	OnStatsChanged();
-
+	UnlockPlayer(); // Issue #22: AMP - 2013-09-28 - Fix jitter while selecting hero
+	Spawn();
 	return true;
 }
 
