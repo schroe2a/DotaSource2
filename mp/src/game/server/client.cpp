@@ -1145,10 +1145,10 @@ void CC_God_f (void)
 		   return;
    }
 #else
-	if ( gpGlobals->deathmatch )
-		return;
+	// Issue #23: AMP - 2013-09-28 - Enable "god" command (toggle) in cheats mode
+	//if ( gpGlobals->deathmatch )
+	//	return;
 #endif
-
 	pPlayer->ToggleFlag( FL_GODMODE );
 	if (!(pPlayer->GetFlags() & FL_GODMODE ) )
 		ClientPrint( pPlayer, HUD_PRINTCONSOLE, "godmode OFF\n");
