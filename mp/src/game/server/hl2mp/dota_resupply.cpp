@@ -232,8 +232,14 @@ bool Dota_Resupply::ReSupplyPlayer( CHL2MP_Player * pPlayer )
 				iAmmoIndex = weapon->GetPrimaryAmmoType();
 				if ( iAmmoIndex < 0 || iAmmoIndex >= MAX_AMMO_SLOTS )
 					continue;
-				
+
 				int iMax = (GetAmmoDef()->MaxCarry(iAmmoIndex) / 4) * weaponLevel;
+
+				if ( weapon->UsesClipsForAmmo1() ) {
+					int missingFromClip1 = weapon->GetMaxClip1() - weapon->Clip1();
+					iMax += missingFromClip1;
+				}
+								
 				int iAdd = iMax - pPlayer->GetAmmoCount(iAmmoIndex);
 				if ( iAdd >= 1 )
 					gotSomething |= (pPlayer->GiveAmmo( iAdd, weapon->GetPrimaryAmmoType() ) != 0);						
