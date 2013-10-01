@@ -351,3 +351,21 @@
 
 	"wave"	"player/ready1.mp3"
 }
+
+"Dota.LevelUp1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"VOL_NORM"
+	"soundlevel"  "SNDLVL_NORM"
+
+	"wave"	"player/levelUp1.mp3"
+}
+
+"Dota.LevelUp2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"VOL_NORM"
+	"soundlevel"  "SNDLVL_NORM"
+
+	"wave"	"player/levelUp2.mp3"
+}
