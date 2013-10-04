@@ -259,7 +259,9 @@ bool			CBaseSkill::UseSkill()
 {
 	if ( this->m_iLevel <= 0 || this->m_iCooldown > 0.0f )
 	{
-		this->GetPlayer()->EmitSound( "HL2Player.UseDeny" );
+		if (this->GetPlayer()->IsAlive()) { // Issue #18: AMP - 2013-10-04 - Fix repeating UseDeny sound after you die
+			this->GetPlayer()->EmitSound( "HL2Player.UseDeny" );
+		}
 		return false;
 	}
 
