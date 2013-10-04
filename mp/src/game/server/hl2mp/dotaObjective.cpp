@@ -34,6 +34,8 @@ void DotaObjective::Spawn( )
 	BaseClass::Spawn();
 	if (CheckLaneMode()) {
 		TakeAction(DOBJ_ACTION_OPEN);
+	} else {
+		TakeAction(DOBJ_ACTION_CLOSE);
 	}
 }
 
@@ -92,7 +94,7 @@ int DotaObjective::TakeAction( int dobjAction ) { // Issue #24: AMP - 2013-10-04
 		//turn off the maker
 		CreepMaker * maker = (CreepMaker*)gEntList.FindEntityByName( NULL, m_creepMakerName );
 		if( maker )
-			maker->m_nMaxLiveChildren = 0;
+			maker->m_enabled = false;
 
 		//see if I'm the last one, if so, game over
 		bool foundOne = false;
@@ -115,9 +117,7 @@ int DotaObjective::TakeAction( int dobjAction ) { // Issue #24: AMP - 2013-10-04
 		m_timesHit = 0;
 		m_bMet = false;
 		CreepMaker * maker = (CreepMaker*)gEntList.FindEntityByName( NULL, m_creepMakerName );
-		if (maker->m_nMaxLiveChildren<=0) {
-			maker->m_nMaxLiveChildren = 10;
-		}
+		maker->m_enabled = true;
 		PropSetAnim( "Open" );
 		return true;
 	}
@@ -147,6 +147,5 @@ BOOL DotaObjective::CheckLaneMode( ) { // Issue #24: AMP - 2013-10-04 - Conditio
 	} else {
 		return false;
 	}
-	Msg("Verifying lane: %s contains %s -> %d\n", objectiveName, laneToFind, strstr(objectiveName, laneToFind)!=NULL);
 	return strstr(objectiveName, laneToFind)!=NULL;
 }

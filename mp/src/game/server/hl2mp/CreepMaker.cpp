@@ -60,6 +60,7 @@ CreepMaker::CreepMaker(void)
 {
 	m_spawnEquipment = NULL_STRING;
 	m_GroupCount = 0;
+	m_enabled = true;
 }
 
 void CreepMaker::Precache( void )
@@ -108,7 +109,7 @@ bool CreepMaker::HumanHullFits( const Vector &vecLocation )
 
 bool CreepMaker::CanMakeNPC( bool bIgnoreSolidEntities )
 {
-	if ( m_nLiveChildren >= m_nMaxLiveChildren )
+	if ( m_nLiveChildren >= m_nMaxLiveChildren || !m_enabled )
 	{// not allowed to make a new one yet. Too many live ones out right now.
 		return false;
 	}
