@@ -189,6 +189,10 @@ void CMapOverview::Init( void )
 	ListenForGameEvent( "player_spawn" );
 	ListenForGameEvent( "player_death" );
 	ListenForGameEvent( "player_disconnect" );
+
+	// Issue#7: JSM - 2013-10-06 - listen for new mod events for creap spawn/death
+	ListenForGameEvent( "creep_spawn" );
+	ListenForGameEvent( "creep_death" );
 }
 
 void CMapOverview::InitTeamColorsAndIcons()
@@ -287,6 +291,23 @@ void CMapOverview::UpdatePlayers()
 	}
 }
 
+// Issue#7: JSM - 2013-10-06 - logic for animating the local player icon state (might be used for all players)
+void CMapOverview::UpdatePlayerMapIconState()
+{
+	if ( m_fNextPlayerCamIconUpdate > m_fWorldTime )
+		return;
+
+	m_fNextPlayerCamIconUpdate = m_fWorldTime + (1.0 / 10.0); // update 10 times a second
+
+	for (int i=0; i<MAX_PLAYERS; i++)
+	{
+		MapPlayer_t *p = &m_Players[i];
+
+		// move player position icon state
+		p->mapIconState = ++p->mapIconState % 10;
+	}
+}
+
 void CMapOverview::UpdatePlayerTrails()
 {
 	if ( m_fNextTrailUpdate > m_fWorldTime )
@@ -353,6 +374,8 @@ void CMapOverview::Paint()
 
 	UpdatePlayerTrails();
 
+	UpdatePlayerMapIconState();
+
 	DrawMapTexture();
 
 	DrawMapPlayerTrails();
@@ -389,16 +412,17 @@ bool CMapOverview::CanPlayerBeSeen(MapPlayer_t *player)
 	if ( player->team <= TEAM_SPECTATOR )
 		return false;
 
-	// if observer is an active player, check mp_forcecamera:
+	// Issue#7: JSM - 2013-10-06 - Always draw all active players on the map!
+	//// if observer is an active player, check mp_forcecamera:
 
-	if ( mp_forcecamera.GetInt() == OBS_ALLOW_NONE )
-		return false;
+	//if ( mp_forcecamera.GetInt() == OBS_ALLOW_NONE )
+	//	return false;
 
-	if ( mp_forcecamera.GetInt() == OBS_ALLOW_TEAM )
-	{
-		// true if both players are on the same team
-		return (localPlayer->GetTeamNumber() == player->team );
-	}
+	//if ( mp_forcecamera.GetInt() == OBS_ALLOW_TEAM )
+	//{
+	//	// true if both players are on the same team
+	//	return (localPlayer->GetTeamNumber() == player->team );
+	//}
 
 	// by default we can see all players
 	return true;
@@ -763,6 +787,7 @@ void CMapOverview::DrawMapPlayers()
 		tempObj.color = player->color;
 		tempObj.status = status;
 		tempObj.statusColor = colorGreen;
+		tempObj.mapIconState = player->mapIconState;  // Issue#7: JSM - 2013-10-06 - also track map icon state
 
 		DrawIcon( &tempObj );
 	}
@@ -897,6 +922,7 @@ void CMapOverview::ResetRound()
 		if ( p->team > TEAM_SPECTATOR )
 		{
 			p->health = 100;
+			p->mapIconState = 0; // Issue#7: JSM - 2013-10-06 - reset map icon state
 		}
 
 		Q_memset( p->trail, 0, sizeof(p->trail) );
@@ -914,10 +940,33 @@ void CMapOverview::OnMousePressed( MouseCode code )
 
 void CMapOverview::DrawCamera()
 {
+	// Issue#7: JSM - 2013-10-06 - rewrite for drawing the local players map icon
+
 	// draw a red center point
-	surface()->DrawSetColor( 255,0,0,255 );
+	vec_t size = 4.0;
+	vec_t xScale = size;
+	vec_t yScale = size;
+
+	CBasePlayer *player = CBasePlayer::GetLocalPlayer();
+	if ( !player ) return;
+
+	MapPlayer_t *p = GetPlayerByUserID( player->GetUserID() );
+	if ( !p ) return;
+
+	int state = p->mapIconState;
+
 	Vector2D center = MapToPanel( m_ViewOrigin );
-	surface()->DrawFilledRect( center.x-2, center.y-2, center.x+2, center.y+2);
+	//surface()->DrawSetColor( 255,0,0,255 );
+	//surface()->DrawFilledRect( center.x-2, center.y-2, center.x+2, center.y+2);
+
+	// Use the current local player map icon state to determine how to draw the camera.
+	surface()->DrawSetColor( 255, 0, 0, ((state+1)*255 / 10.0) );
+	surface()->DrawOutlinedCircle( center.x, center.y, size+2, 16 );
+
+	surface()->DrawSetColor( 255, 0, 0, 255 );
+	for (int i = 0; i <= min((state + 1), size); i++) {
+		surface()->DrawOutlinedCircle( center.x, center.y, i, 16 );
+	}
 }
 
 void CMapOverview::FireGameEvent( IGameEvent *event )
@@ -999,6 +1048,7 @@ void CMapOverview::FireGameEvent( IGameEvent *event )
 			return;
 
 		player->health = 100;
+		player->mapIconState = 0;  // Issue#7: JSM - 2013-10-06 - reset map icon state
 		Q_memset( player->trail, 0, sizeof(player->trail) ); // clear trails
 	}
 
@@ -1010,6 +1060,21 @@ void CMapOverview::FireGameEvent( IGameEvent *event )
 			return;
 
 		Q_memset( player, 0, sizeof(MapPlayer_t) ); // clear player field
+	}
+
+	// Issue#7: JSM - 2013-10-06 - catching the firing of creep spawn/death event
+	else if ( Q_strcmp( type, "creep_spawn" ) == 0 )
+	{
+		int entindex = event->GetInt( "entindex" );
+
+		 AddObject( "", entindex, 0 );
+	}
+
+	else if ( Q_strcmp( type, "creep_death" ) == 0 )
+	{
+		int entindex = event->GetInt( "entindex" );
+
+		RemoveObjectByIndex( entindex );
 	}
 }
 

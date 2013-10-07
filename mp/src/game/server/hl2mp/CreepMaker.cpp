@@ -166,6 +166,14 @@ void CreepMaker::DeathNotice( CBaseEntity *pVictim )
 	// ok, we've gotten the deathnotice from our child
 	m_nLiveChildren--;
 
+	// Issue#7: JSM - 2013-10-06 - tracking of creep entities in client
+	IGameEvent *pEvent = gameeventmanager->CreateEvent( "creep_death" );
+	if ( pEvent )
+	{
+		pEvent->SetInt( "entindex", pVictim->entindex() );
+		gameeventmanager->FireEvent( pEvent );
+	}
+
 	// If we're here, we're getting erroneous death messages from children we haven't created
 	AssertMsg( m_nLiveChildren >= 0, "CreepMaker receiving child death notice but thinks has no children\n" );	
 }
@@ -221,6 +229,14 @@ void CreepMaker::MakeNPCInRadius( void )
 	DispatchSpawn( pent );
 	pent->SetOwnerEntity( this );
 	DispatchActivate( pent );
+
+	// Issue#7: JSM - 2013-10-06 - tracking of creep entities in client
+	IGameEvent *pEvent = gameeventmanager->CreateEvent( "creep_spawn" );
+	if ( pEvent )
+	{
+		pEvent->SetInt( "entindex", pent->entindex() );
+		gameeventmanager->FireEvent( pEvent );
+	}
 
 	m_nLiveChildren++;// count this NPC	
 }

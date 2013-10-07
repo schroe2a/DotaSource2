@@ -48,4 +48,15 @@
 		"player"	"byte"		// entindex of the player
 		"achievement"	"short"		// achievement ID
 	}
+	
+	// Issue#7: JSM - 2013-10-06 - new mod events to indicate creep spawn/death
+	"creep_spawn"
+	{
+		"entindex"	"short"		// entindex of the newly spawned creep entity
+	}
+	
+	"creep_death"
+	{
+		"entindex"	"short"		// entindex of the creep entity that just died
+	}
 }
