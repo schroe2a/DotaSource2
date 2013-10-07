@@ -139,7 +139,7 @@ void CreepMaker::MakerThink ( void )
 ConVar creepGroupSize( "sv_creepGroupSize", "2", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep group size", NULL );
 ConVar creepSpawnFrequency( "sv_creepSpawnFrequency", "30", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep spawn frequency", NULL );
 ConVar creepMaxLiveChildren( "sv_creepMaxLiveChildren", "10", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep max live children", NULL );
-ConVar creepEquipment( "sv_creepEquipment", "SMG1", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep equipment", NULL ); // Currently only weapon_smg1 (default), and weapon_ar2 work
+//ConVar creepEquipment( "sv_creepEquipment", "SMG1", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep equipment", NULL ); // Currently only weapon_smg1 (default), and weapon_ar2 work
 
 /** Check cvars for changes to configuration: sv_creepGroupSize, sv_creepSpawnFrequency, sv_creepMaxLiveChildren */
 void CreepMaker::CheckConfig ( void ) {
@@ -156,9 +156,9 @@ void CreepMaker::CheckConfig ( void ) {
 	if (tempCreepMaxLiveChildren > 0 && tempCreepMaxLiveChildren != m_nMaxLiveChildren )
 		m_nMaxLiveChildren = tempCreepMaxLiveChildren;
 
-	const char * tempCreepEquipment = creepEquipment.GetString();
-	if (m_spawnEquipment.ToCStr()!=tempCreepEquipment && tempCreepEquipment!=NULL && strlen(tempCreepEquipment)>0)
-		m_spawnEquipment = MAKE_STRING(tempCreepEquipment); // Actually assign to cvar
+	//const char * tempCreepEquipment = creepEquipment.GetString();
+	//if (m_spawnEquipment.ToCStr()!=tempCreepEquipment && tempCreepEquipment!=NULL && strlen(tempCreepEquipment)>0)
+	//	m_spawnEquipment = MAKE_STRING(tempCreepEquipment); // Actually assign to cvar
 
 }
 
