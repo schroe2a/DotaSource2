@@ -1154,22 +1154,22 @@ CItemDef *GetItemDef()
 	{
 		bInitted = true;
 
-		def.AddItemType("weapon_pistol",		900, NULL);
-		def.AddItemType("weapon_357",			1200, NULL);
-		def.AddItemType("weapon_smg1",			2100, NULL);
-		def.AddItemType("weapon_ar2",			3000, NULL);
-		def.AddItemType("weapon_shotgun",		2300, NULL);
-		def.AddItemType("weapon_crossbow",		2700, NULL);
-		def.AddItemType("weapon_physcannon",	1700, NULL);
+		def.AddItemType("weapon_pistol",		450, NULL);
+		def.AddItemType("weapon_357",			600, NULL);
+		def.AddItemType("weapon_smg1",			1050, NULL);
+		def.AddItemType("weapon_ar2",			1500, NULL);
+		def.AddItemType("weapon_shotgun",		1150, NULL);
+		def.AddItemType("weapon_crossbow",		1350, NULL);
+		def.AddItemType("weapon_physcannon",	850, NULL);
 
-		def.AddItemType("rpg_round",			700, "weapon_rpg");
-		def.AddItemType("slam",					100, "weapon_slam");
-		def.AddItemType("grenade",				300, "weapon_frag");
+		def.AddItemType("rpg_round",			350, "weapon_rpg");
+		def.AddItemType("slam",					50, "weapon_slam");
+		def.AddItemType("grenade",				150, "weapon_frag");
 
-		def.AddItemType("AR2AltFire",			1500, "weapon_ar2");
-		def.AddItemType("smg1_grenade",			800, "weapon_smg1");		
+		def.AddItemType("AR2AltFire",			750, "weapon_ar2");
+		def.AddItemType("smg1_grenade",			400, "weapon_smg1");		
 
-		def.AddItemType("medevac",				100, NULL);
+		def.AddItemType("medevac",				50, NULL);
 	}
 
 	return &def;
