@@ -1718,6 +1718,7 @@ CON_COMMAND( timeleft, "prints the time remaining in the match" )
 	}	
 }
 
+ConVar startingMoney("sv_startingMoney", "500", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep group size", NULL );
 
 void CHL2MP_Player::Reset()
 {	
@@ -1726,7 +1727,7 @@ void CHL2MP_Player::Reset()
 
 	m_iExp = 0;
 	m_iLevel = 1;
-	m_iMoney = 1000;
+	m_iMoney = startingMoney.GetInt();
 	m_iSkillPoints = 1;
 	m_iStatLevel = 0;
 	m_iHasPistol = 0;

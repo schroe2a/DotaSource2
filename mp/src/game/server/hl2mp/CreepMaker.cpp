@@ -136,10 +136,10 @@ void CreepMaker::MakerThink ( void )
 }
 
 // Issue#3: AMP - 2013-09-19 - Server variables
-ConVar creepGroupSize( "sv_creepGroupSize", "0", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep group size", NULL );
-ConVar creepSpawnFrequency( "sv_creepSpawnFrequency", "0", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep spawn frequency", NULL );
-ConVar creepMaxLiveChildren( "sv_creepMaxLiveChildren", "0", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep max live children", NULL );
-ConVar creepEquipment( "sv_creepEquipment", "", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep equipment", NULL ); // Currently only weapon_smg1 (default), and weapon_ar2 work
+ConVar creepGroupSize( "sv_creepGroupSize", "2", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep group size", NULL );
+ConVar creepSpawnFrequency( "sv_creepSpawnFrequency", "30", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep spawn frequency", NULL );
+ConVar creepMaxLiveChildren( "sv_creepMaxLiveChildren", "10", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep max live children", NULL );
+ConVar creepEquipment( "sv_creepEquipment", "SMG1", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep equipment", NULL ); // Currently only weapon_smg1 (default), and weapon_ar2 work
 
 /** Check cvars for changes to configuration: sv_creepGroupSize, sv_creepSpawnFrequency, sv_creepMaxLiveChildren */
 void CreepMaker::CheckConfig ( void ) {

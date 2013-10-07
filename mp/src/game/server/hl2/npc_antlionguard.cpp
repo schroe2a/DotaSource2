@@ -630,6 +630,9 @@ const impactdamagetable_t &CNPC_AntlionGuard::GetPhysicsImpactDamageTable( void 
 	return gAntlionGuardImpactDamageTable;
 }
 
+// Issue#3: AES - 2013-10-04 - Server variables for money drops
+ConVar antlionGuardMoneyDrop( "sv_antlionGuardMoneyDrop", "1000", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep group size", NULL );
+
 //==================================================
 // CNPC_AntlionGuard
 //==================================================
@@ -641,7 +644,7 @@ CNPC_AntlionGuard::CNPC_AntlionGuard( void )
 
 	m_iszPhysicsPropClass = AllocPooledString( "prop_physics" );
 
-	m_iMoneyToGive = 500;
+	m_iMoneyToGive = antlionGuardMoneyDrop.GetInt();
 }
 
 LINK_ENTITY_TO_CLASS( npc_antlionguard, CNPC_AntlionGuard );
