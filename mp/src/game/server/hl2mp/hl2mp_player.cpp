@@ -29,7 +29,8 @@
 
 #include "engine/IEngineSound.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
-
+#include "vgui/ISurface.h"
+#include <vgui_controls/Controls.h>
 #include "ilagcompensationmanager.h"
 
 int g_iLastCitizenModel = 0;
@@ -124,9 +125,10 @@ CON_COMMAND( addmoney, "gives money" )
 CON_COMMAND( skill1, "execute your skill")
 {
 	CHL2MP_Player *pPlayer = ToHL2MPPlayer( UTIL_GetCommandClient() );
-	if ( pPlayer && pPlayer->GetSkill(1) && pPlayer->IsAlive() )
-	{
+	if ( pPlayer && pPlayer->GetSkill(1) && pPlayer->IsAlive() && pPlayer->IsReady() ) {
 		pPlayer->GetSkill(1)->Use();
+	} else if ( pPlayer && !pPlayer->IsReady()) { // Issue #21: AMP - 2013-09-28 - Make skill1 say "ready" if player not yet ready
+		engine->ClientCommand( pPlayer->edict(), "say ready");
 	}
 }
 CON_COMMAND( skill2, "execute your skill")
@@ -239,10 +241,13 @@ void CHL2MP_Player::CheckLevel()
 	if ( bShouldLevel )
 	{
 		OnStatsChanged(); // and then adjust their settings (speed, health, damage) to reflect the change
-
-		ClientPrint( this, HUD_PRINTTALK, UTIL_VarArgs("You have reached level %i\n", GetLevel()) ); // write it on their screen
-		 
+		ClientPrint( this, HUD_PRINTTALK, UTIL_VarArgs("You have reached level %i\n", GetLevel()) ); // write it on their screen 
 		UTIL_ClientPrintAll( HUD_PRINTCONSOLE, UTIL_VarArgs("%s has reached level %i\n", GetPlayerName(), GetLevel()) ); // write it in everyone's console
+		if (m_iLevel!=6 && m_iLevel!=10 && m_iLevel!=16) { // Issue #12: AMP - 2013-09-30 - Play sound when leveling up (2nd try)
+			EmitSound( "Dota.LevelUp1" ); // Play normal level-up sound
+		} else {
+			EmitSound( "Dota.LevelUp2" ); // Play "ultimate" level-up sound
+		}
 	}
 }
 
@@ -349,6 +354,9 @@ void CHL2MP_Player::Precache( void )
 	PrecacheModel( "models/props_c17/canister01a.mdl" );
 	PrecacheModel( "models/combine_super_soldier.mdl" );
 	PrecacheModel( "models/props_combine/combine_barricade_short01a.mdl" );
+
+	PrecacheScriptSound( "Dota.LevelUp1" );
+	PrecacheScriptSound( "Dota.LevelUp2" );
 }
 
 void CHL2MP_Player::GiveAllItems( void )
@@ -479,7 +487,9 @@ void CHL2MP_Player::Spawn(void)
 	if ( GetTeamNumber() != TEAM_SPECTATOR )
 	{
 		StopObserverMode();
-		PlaySpawnSound( STRING( GetModelName() ) );
+		if (m_bReady) { // Issue #14: AMP - 2013-09-23 - Only play spawn sound after the player is "ready"
+			PlaySpawnSound( STRING( GetModelName() ) );
+		}
 
 		this->SetHealth( this->GetMaxHealth() );
 		this->SetArmorValue( this->GetMaxHealth() );
@@ -1041,6 +1051,7 @@ bool CHL2MP_Player::HandleCommand_JoinTeam( int team )
 	{
 		StopObserverMode();
 		State_Transition(STATE_ACTIVE);
+		LockPlayerInPlace(); // Issue #22: AMP - 2013-09-28 - Fix jitter while selecting hero
 		// popup classmenu when joining a team
 	   if ( team == 2 )
 	   {
@@ -1095,7 +1106,8 @@ bool CHL2MP_Player::HandleCommand_JoinClass( int hero )
 	CreateSkills( m_HeroType );
 
 	OnStatsChanged();
-
+	UnlockPlayer(); // Issue #22: AMP - 2013-09-28 - Fix jitter while selecting hero
+	Spawn();
 	return true;
 }
 
@@ -1706,6 +1718,7 @@ CON_COMMAND( timeleft, "prints the time remaining in the match" )
 	}	
 }
 
+ConVar startingMoney("sv_startingMoney", "500", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep group size", NULL );
 
 void CHL2MP_Player::Reset()
 {	
@@ -1714,7 +1727,7 @@ void CHL2MP_Player::Reset()
 
 	m_iExp = 0;
 	m_iLevel = 1;
-	m_iMoney = 1000;
+	m_iMoney = startingMoney.GetInt();
 	m_iSkillPoints = 1;
 	m_iStatLevel = 0;
 	m_iHasPistol = 0;

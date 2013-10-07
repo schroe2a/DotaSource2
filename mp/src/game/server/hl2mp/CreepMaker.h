@@ -28,6 +28,7 @@ public:
 	int			m_nLiveChildren;	// how many NPCs made by this NPC maker that are currently alive
 	int			m_nMaxLiveChildren;	// max number of NPCs that this maker may have out at one time.
 	int			m_nGroupSize;
+	BOOL        m_enabled;          // Switch to turn off the creepmaker temporarily - Issue #24: AMP - 2013-10-04 - Conditionally open lanes
 
 	string_t	m_spawnEquipment;
 

@@ -79,6 +79,9 @@ ConVar func_breakdmg_explosive( "func_breakdmg_explosive", "1.25" );
 
 ConVar sv_turbophysics( "sv_turbophysics", "0", FCVAR_REPLICATED, "Turns on turbo physics" );
 
+// Issue #19: AMP - 2013-09-29 - Make creeps ignore moveable physics props
+ConVar creepsIgnoreProps( "sv_dotaCreepsIgnoreProps", "1", FCVAR_SERVER_CAN_EXECUTE, "Creeps ignore moveable physics props", NULL );
+
 #ifdef HL2_EPISODIC
 	#define PROP_FLARE_LIFETIME 30.0f
 	#define PROP_FLARE_IGNITE_SUBSTRACT 5.0f
@@ -2534,6 +2537,15 @@ void CPhysicsProp::Spawn( )
 	{
 		SetFadeDistance( -1, 0 );
 		DisableAutoFade();
+	}
+
+	// Issue #19: AMP - 2013-09-29 - Make creeps ignore moveable physics props
+	int creepsIgnorePropsTemp = creepsIgnoreProps.GetInt();
+	if (creepsIgnorePropsTemp>0) {
+		IPhysicsObject * pPhysics = this->VPhysicsGetObject();
+		if (pPhysics && pPhysics->IsMoveable()) {
+			this->SetNavIgnore();
+		}
 	}
 	
 }

@@ -630,6 +630,9 @@ const impactdamagetable_t &CNPC_AntlionGuard::GetPhysicsImpactDamageTable( void 
 	return gAntlionGuardImpactDamageTable;
 }
 
+// Issue#3: AES - 2013-10-04 - Server variables for money drops
+ConVar antlionGuardMoneyDrop( "sv_antlionGuardMoneyDrop", "1000", FCVAR_SERVER_CAN_EXECUTE | FCVAR_NOTIFY, "Creep group size", NULL );
+
 //==================================================
 // CNPC_AntlionGuard
 //==================================================
@@ -641,7 +644,7 @@ CNPC_AntlionGuard::CNPC_AntlionGuard( void )
 
 	m_iszPhysicsPropClass = AllocPooledString( "prop_physics" );
 
-	m_iMoneyToGive = 500;
+	m_iMoneyToGive = antlionGuardMoneyDrop.GetInt();
 }
 
 LINK_ENTITY_TO_CLASS( npc_antlionguard, CNPC_AntlionGuard );
@@ -3235,6 +3238,7 @@ void CNPC_AntlionGuard::SummonAntlions( void )
 
 		pAntlion->AddSpawnFlags( SF_NPC_FALL_TO_GROUND );
 		pAntlion->AddSpawnFlags( SF_NPC_FADE_CORPSE );
+		pAntlion->SetNavIgnore(); // Issue #19: AMP - 2013-10-05 - Creeps ignore antlions
 
 		// Make the antlion fire my input when he dies
 		pAntlion->KeyValue( "OnDeath", UTIL_VarArgs("%s,SummonedAntlionDied,,0,-1", STRING(GetEntityName())) );

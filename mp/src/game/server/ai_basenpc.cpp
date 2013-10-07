@@ -212,6 +212,10 @@ ConVar	ai_reaction_delay_idle( "ai_reaction_delay_idle","0.3" );
 ConVar	ai_reaction_delay_alert( "ai_reaction_delay_alert", "0.1" );
 
 ConVar ai_strong_optimizations( "ai_strong_optimizations", ( IsX360() ) ? "1" : "0" );
+
+ConVar creepMoneyDrop( "sv_creepMoneyDrop", "300" );
+ConVar creepXpReward( "sv_creepXpReward", "100" );
+
 bool AIStrongOpt( void )
 {
 	return ai_strong_optimizations.GetBool();
@@ -10493,12 +10497,12 @@ bool CAI_BaseNPC::FOkToMakeSound( int soundPriority )
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::JustMadeSound( int soundPriority, float flSoundLength )
 {
-	m_flSoundWaitTime = gpGlobals->curtime + flSoundLength + random->RandomFloat(1.5, 2.0);
+	m_flSoundWaitTime = gpGlobals->curtime + flSoundLength + random->RandomFloat(2.0, 5.0); // Issue #20: AMP - 2013-09-28 - Make AI players not so chatty
 	m_nSoundPriority = soundPriority;
 
 	if (m_pSquad)
 	{
-		m_pSquad->JustMadeSound( soundPriority, gpGlobals->curtime + flSoundLength + random->RandomFloat(1.5, 2.0) );
+		m_pSquad->JustMadeSound( soundPriority, gpGlobals->curtime + flSoundLength + random->RandomFloat(2.0, 5.0) );
 	}
 }
 
@@ -11396,8 +11400,8 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 	
 	SetCollisionGroup( COLLISION_GROUP_NPC );
 
-	m_iMoneyToGive = 50;
-	m_iExpToGive = 100;
+	m_iMoneyToGive = creepMoneyDrop.GetInt();
+	m_iExpToGive = creepXpReward.GetInt();
 }
 
 //-----------------------------------------------------------------------------

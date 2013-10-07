@@ -3346,21 +3346,23 @@ int CNPC_Combine::SpeakOrTalk( const char *pSentence, SentencePriority_t nSoundP
 	}
 	else
 	{
-		if (	  Q_stristr ( pSentence, "COMBINE_ANNOUNCE" ) )		EmitSound ( "npc_citizen.letsgo01", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_ASSAULT" ) )		EmitSound ( "npc_citizen.evenodds", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_ALERT" ) )		EmitSound ( "npc_citizen.combine01", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_KILL_MONST" ) )	EmitSound ( "npc_citizen.gotone01", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_PLAYER_DEAD" ) )	EmitSound ( "npc_citizen.gotone02", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_COVER" ) )		EmitSound ( "npc_citizen.coverwhilereload01", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_GREN" ) )			EmitSound ( "npc_citizen.watchout", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_PAIN" ) )			EmitSound ( "npc_citizen.ow01", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_TAUNT" ) )		EmitSound ( "npc_citizen.imhurt02", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_COVER" ) )		EmitSound ( "npc_citizen.illstayhere01", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_LAST_OF_SQUAD" ) ) EmitSound ( "npc_citizen.gordead_ques07" );
-		else if ( Q_stristr ( pSentence, "COMBINE_MAN_DOWN" ) )		EmitSound ( "npc_citizen.gordead_ques02", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_DIE" ) )			EmitSound ( "npc_citizen.die", gpGlobals->curtime );
-		else if ( Q_stristr ( pSentence, "COMBINE_CLEAR" ) )		EmitSound ( "npc_citizen.leadtheway02", gpGlobals->curtime );		
-		
+		if (FOkToMakeSound(nSoundPriority)) { // Issue #20: AMP - 2013-09-28 - Make rebels not so chatty
+			if (	  Q_stristr ( pSentence, "COMBINE_ANNOUNCE" ) )		EmitSound ( "npc_citizen.letsgo01", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_ASSAULT" ) )		EmitSound ( "npc_citizen.evenodds", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_ALERT" ) )		EmitSound ( "npc_citizen.combine01", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_KILL_MONST" ) )	EmitSound ( "npc_citizen.gotone01", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_PLAYER_DEAD" ) )	EmitSound ( "npc_citizen.gotone02", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_COVER" ) )		EmitSound ( "npc_citizen.coverwhilereload01", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_GREN" ) )			EmitSound ( "npc_citizen.watchout", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_PAIN" ) )			EmitSound ( "npc_citizen.ow01", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_TAUNT" ) )		EmitSound ( "npc_citizen.imhurt02", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_COVER" ) )		EmitSound ( "npc_citizen.illstayhere01", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_LAST_OF_SQUAD" ) ) EmitSound ( "npc_citizen.gordead_ques07" );
+			else if ( Q_stristr ( pSentence, "COMBINE_MAN_DOWN" ) )		EmitSound ( "npc_citizen.gordead_ques02", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_DIE" ) )			EmitSound ( "npc_citizen.die", gpGlobals->curtime );
+			else if ( Q_stristr ( pSentence, "COMBINE_CLEAR" ) )		EmitSound ( "npc_citizen.leadtheway02", gpGlobals->curtime );
+			JustMadeSound( nSoundPriority, 2.0f );
+		}
 		return 1;
 	}
 }

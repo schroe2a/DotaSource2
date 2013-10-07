@@ -169,7 +169,7 @@
 		"dulltext"		"1"
 		"brighttext"		"0"
 		"wrap"		"1"
-		"Command"		"vguicancel"
+		"Command"		"chooseteam"
 		"Default"		"0"
 	}
 	"selectlabel"
