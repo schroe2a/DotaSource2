@@ -89,6 +89,7 @@ protected:	// private structures & types
 		Vector	position;	// current x,y pos
 		QAngle	angle;		// view origin 0..360
 		Vector2D trail[MAX_TRAIL_LENGTH];	// save 1 footstep each second for 1 minute
+		int		mapIconState; // Issue#7: JSM - 2013-10-06 - map icon state: 0..9
 	} MapPlayer_t;
 
 	typedef struct MapObject_s {
@@ -105,6 +106,7 @@ protected:	// private structures & types
 		Color	statusColor;	// color of status bar
 		int		flags;		// MAB_OBJECT_*
 		const char *text;	// text to draw underneath the icon
+		int		mapIconState; // Issue#7: JSM - 2013-10-06 - map icon state: 0..9
 	} MapObject_t;
 
 #define MAP_OBJECT_ALIGN_TO_MAP	(1<<0)
@@ -193,6 +195,7 @@ protected:
 	virtual void	DrawMapPlayers();
 	virtual void	DrawMapPlayerTrails();
 	virtual void	UpdatePlayerTrails();
+	virtual void	UpdatePlayerMapIconState(); // Issue#7: JSM - 2013-10-06 - new Update method
 	virtual void	ResetRound();
 	virtual void	InitTeamColorsAndIcons();
 	virtual void	UpdateSizeAndPosition();
@@ -265,8 +268,8 @@ protected:
 	float	m_fWorldTime;	// current world time
 	float   m_fNextTrailUpdate; // next time to update player trails
 	float	m_fTrailUpdateInterval; // if -1 don't show trails
+	float	m_fNextPlayerCamIconUpdate; // Issue#7: JSM - 2013-10-06 - next time to update player camera icon
 	bool	m_bFollowAngle;	// if true, map rotates with view angle
-
 
 };
 

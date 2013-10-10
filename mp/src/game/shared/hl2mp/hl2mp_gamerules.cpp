@@ -1154,22 +1154,22 @@ CItemDef *GetItemDef()
 	{
 		bInitted = true;
 
-		def.AddItemType("weapon_pistol",		900, NULL);
-		def.AddItemType("weapon_357",			1200, NULL);
-		def.AddItemType("weapon_smg1",			2100, NULL);
-		def.AddItemType("weapon_ar2",			3000, NULL);
-		def.AddItemType("weapon_shotgun",		2300, NULL);
-		def.AddItemType("weapon_crossbow",		2700, NULL);
-		def.AddItemType("weapon_physcannon",	1700, NULL);
+		def.AddItemType("weapon_pistol",		450, NULL);
+		def.AddItemType("weapon_357",			600, NULL);
+		def.AddItemType("weapon_smg1",			1050, NULL);
+		def.AddItemType("weapon_ar2",			1500, NULL);
+		def.AddItemType("weapon_shotgun",		1150, NULL);
+		def.AddItemType("weapon_crossbow",		1350, NULL);
+		def.AddItemType("weapon_physcannon",	850, NULL);
 
-		def.AddItemType("rpg_round",			700, "weapon_rpg");
-		def.AddItemType("slam",					100, "weapon_slam");
-		def.AddItemType("grenade",				300, "weapon_frag");
+		def.AddItemType("rpg_round",			350, "weapon_rpg");
+		def.AddItemType("slam",					50, "weapon_slam");
+		def.AddItemType("grenade",				150, "weapon_frag");
 
-		def.AddItemType("AR2AltFire",			1500, "weapon_ar2");
-		def.AddItemType("smg1_grenade",			800, "weapon_smg1");		
+		def.AddItemType("AR2AltFire",			750, "weapon_ar2");
+		def.AddItemType("smg1_grenade",			400, "weapon_smg1");		
 
-		def.AddItemType("medevac",				100, NULL);
+		def.AddItemType("medevac",				50, NULL);
 	}
 
 	return &def;
@@ -1363,34 +1363,34 @@ int			CHL2MPRules::GetSkillCooldown( const char * skillClass,  int level )
 	else if ( FStrEq( skillClass,  "dota_skill_speed_boost" ) )		return 60;
 	else if ( FStrEq( skillClass,  "dota_skill_summondog" ) )		return 300; 
 	
-	else if ( FStrEq( skillClass,  "dota_skill_throw_explosive" ) ) return 300-(level*60);
+	else if ( FStrEq( skillClass,  "dota_skill_throw_explosive" ) ) return 50-(level*10);
 	else if ( FStrEq( skillClass,  "dota_skill_smg_ammo" ) )		return 210-(level*30);
-	else if ( FStrEq( skillClass,  "dota_skill_infiltrate" ) )		return 180; 
+	else if ( FStrEq( skillClass,  "dota_skill_infiltrate" ) )		return 90; 
 
 	else if ( FStrEq( skillClass,  "dota_skill_heal" ) )			return 35 - (level * 5);
 	else if ( FStrEq( skillClass,  "dota_skill_ar2_ammo" ) )		return 210-(level*30);
-	else if ( FStrEq( skillClass,  "dota_skill_fake_death" ) )		return 210-(level*30);
+	else if ( FStrEq( skillClass,  "dota_skill_fake_death" ) )		return 100-(level*20);
 	else if ( FStrEq( skillClass,  "dota_skill_summonrebs" ) )		return 300; 
 
 	else if ( FStrEq( skillClass,  "dota_skill_shotgun_ammo" ) )	return 210-(level*30);
-	else if ( FStrEq( skillClass,  "dota_skill_summonheadcrab" ) )	return 240;
-	else if ( FStrEq( skillClass,  "dota_skill_zombie_invasion" ) ) return 300;
-	else if ( FStrEq( skillClass,  "dota_skill_summonzombies" ) )	return 300; 
+	else if ( FStrEq( skillClass,  "dota_skill_summonheadcrab" ) )	return 100;
+	else if ( FStrEq( skillClass,  "dota_skill_zombie_invasion" ) ) return 150;
+	else if ( FStrEq( skillClass,  "dota_skill_summonzombies" ) )	return 150; 
 
 	else if ( FStrEq( skillClass,  "dota_skill_phonehome" ) )		return 85-(level*10);
 	else if ( FStrEq( skillClass,  "dota_skill_swap" ) )			return 85-(level*10);
 	else if ( FStrEq( skillClass,  "dota_skill_blink" ) )			return 14-(2*level);
 	else if ( FStrEq( skillClass,  "dota_skill_time_lapse" ) )		return 70-(level*10); 
 
-	else if ( FStrEq( skillClass,  "dota_skill_poison" ) )			return 120;
-	else if ( FStrEq( skillClass,  "dota_skill_trick" ) )			return 360-(level*60);
+	else if ( FStrEq( skillClass,  "dota_skill_poison" ) )			return 60;
+	else if ( FStrEq( skillClass,  "dota_skill_trick" ) )			return 50-(level*10);
 
-	else if ( FStrEq( skillClass,  "dota_skill_drop_wall" ) )		return 180;
+	else if ( FStrEq( skillClass,  "dota_skill_drop_wall" ) )		return 90;
 	else if ( FStrEq( skillClass,  "dota_skill_drop_turret" ) )		return 210-(level*30);
 	else if ( FStrEq( skillClass,  "dota_skill_summon_elites" ) )	return 300;
 
-	else if ( FStrEq( skillClass,  "dota_skill_summonmanhacks" ) )	return 300;
-	else if ( FStrEq( skillClass,  "dota_skill_infect" ) )			return 60;
+	else if ( FStrEq( skillClass,  "dota_skill_summonmanhacks" ) )	return 150;
+	else if ( FStrEq( skillClass,  "dota_skill_infect" ) )			return 30;
 	else if ( FStrEq( skillClass,  "dota_skill_summon_police" ) )	return 300;
 
 	else if ( FStrEq( skillClass,  "dota_skill_mass_heal" ) )		return 120;
@@ -1408,7 +1408,6 @@ int			CHL2MPRules::GetSkillDuration( const char * skillClass,  int level )
 	else if ( FStrEq( skillClass, "dota_skill_infect" ) )		return (level*5);
 	else if ( FStrEq( skillClass, "dota_skill_fake_death" ) )	return 5;
 	else if ( FStrEq( skillClass, "dota_skill_poison" ) )		return 1000;
-	else if ( FStrEq( skillClass, "dota_skill_infect" ) )		return level*5;
 
 	return 0;
 }
@@ -1435,7 +1434,7 @@ float		CHL2MPRules::GetSkillFormula( const char * skillClass,  int level )
 
 	else if ( FStrEq( skillClass,  "dota_skill_blink" ) )			return (4.0f + (3.0f * fLevel)) * 36.0f;
 
-	else if ( FStrEq( skillClass,  "dota_skill_backstab" ) )		return (0.2f * fLevel);
+	else if ( FStrEq( skillClass,  "dota_skill_backstab" ) )		return fLevel;
 	else if ( FStrEq( skillClass,  "dota_skill_poison" ) )			return ( 0.8f - (0.19f * fLevel));
 
 	else if ( FStrEq( skillClass,  "dota_skill_drop_wall" ) )		return 100.0f * fLevel;

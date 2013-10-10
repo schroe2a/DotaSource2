@@ -239,6 +239,9 @@ const char** CHLTVDirector::GetModEvents()
 {
 	static const char *s_modevents[] =
 	{
+		// Issue#7: JSM - 2013-10-06 - new mod events for creep spawn/death
+		"creep_spawn",
+		"creep_death",
 		"hltv_status",
 		"hltv_chat",
 		"player_connect",
