@@ -119,7 +119,8 @@ enum
 	SCHED_FORCE_ANTLIONGUARD_PHYSICS_ATTACK,
 	SCHED_ANTLIONGUARD_CANT_ATTACK,
 	SCHED_ANTLIONGUARD_TAKE_COVER_FROM_ENEMY,
-	SCHED_ANTLIONGUARD_CHASE_ENEMY
+	SCHED_ANTLIONGUARD_CHASE_ENEMY,
+	SCHED_ANTLIONGUARD_GO_HOME
 };
 
 
@@ -139,6 +140,8 @@ enum
 	TASK_ANTLIONGUARD_GET_CHASE_PATH_ENEMY_TOLERANCE,
 	TASK_ANTLIONGUARD_OPPORTUNITY_THROW,
 	TASK_ANTLIONGUARD_FIND_PHYSOBJECT,
+	TASK_ANTLIONGUARD_GET_PATH_HOME,
+	TASK_ANTLIONGUARD_MADE_IT_HOME
 };
 
 //==================================================
@@ -218,6 +221,8 @@ struct PhysicsObjectCriteria_t
 };
 
 #define MAX_FAILED_PHYSOBJECTS 8
+#define HOME_MAX_DISTANCE 220
+#define HOME_MIN_DELAY 10.0f
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -250,6 +255,7 @@ public:
 	
 	virtual void	Precache( void );
 	virtual void	Spawn( void );
+	virtual void	SpawnHome( void );
 	virtual void	Activate( void );
 	virtual void	HandleAnimEvent( animevent_t *pEvent );
 	virtual void	UpdateEfficiency( bool bInPVS )	{ SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); SetMoveEfficiency( AIME_NORMAL ); }
@@ -364,6 +370,12 @@ private:
 	int				m_iChargeMisses;
 	bool			m_bDecidedNotToStop;
 	bool			m_bPreferPhysicsAttack;
+
+	// Support antlion guard "Home" -- Issue #25: AMP - 2013-10-09 - Make antlion guard stop blocking creeps
+	CBaseEntity		* m_pHomeEntity;		// Used as a marker to find its way home. Auto-spawned at every antlion guard when the map starts.
+	float			m_fCanGoHomeTime;		// The next time that we are allowed to "go home" (10 sec after the last time we did).
+	bool			m_ranHomeCrying;		// If false, and health drops below 50%, try to "go home" and set to true.
+	bool			m_bGoHome;				// Force guard to "go home"
 
 	CNetworkVar( bool, m_bCavernBreed );	// If this guard is meant to be a cavern dweller (uses different assets)
 	CNetworkVar( bool, m_bInCavern );		// Behavioral hint telling the guard to change his behavior
@@ -831,7 +843,14 @@ void CNPC_AntlionGuard::Spawn( void )
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_SQUAD );
 	CapabilitiesAdd( bits_CAP_SKIP_NAV_GROUND_CHECK );
 
+	m_bGoHome = false;
+	m_pHomeEntity = NULL;
+	m_fCanGoHomeTime = 0;
+	m_ranHomeCrying = false;
+
 	NPCInit();
+
+	this->SetCollisionGroup( COLLISION_GROUP_NPC_BOSS );
 
 	BaseClass::Spawn();
 
@@ -866,6 +885,26 @@ void CNPC_AntlionGuard::Spawn( void )
 	Vector absMax = Vector(100,100,128);
 
 	CollisionProp()->SetSurroundingBoundsType( USE_SPECIFIED_BOUNDS, &absMin, &absMax );
+
+	// Spawn home entity
+	SpawnHome();
+}
+
+// Build the "home" entity, which the guard heads to whenever he needs to "go home". It is placed at the guard's starting point. -- Issue #25: AMP - 2013-10-09
+void CNPC_AntlionGuard::SpawnHome( void ) {
+	CBaseEntity *pEntity = CreateEntityByName( "info_target" ); // info_target
+	if ( !pEntity ) {
+		Msg("Unable to build home for guardian\n");
+		m_pHomeEntity = this; // Default home to self
+		return;
+	}
+
+	Vector vecSpawn = GetAbsOrigin();
+	pEntity->SetAbsOrigin( vecSpawn );
+	DispatchSpawn( pEntity );
+	pEntity->Activate();
+	pEntity->SetOwnerEntity( this );
+	m_pHomeEntity = pEntity; // Remember this guard's home for later
 }
 
 //-----------------------------------------------------------------------------
@@ -1001,6 +1040,13 @@ int CNPC_AntlionGuard::SelectUnreachableSchedule( void )
 
 	m_OnLostEnemy.FireOutput( this, this );
 	GetEnemies()->MarkAsEluded( GetEnemy() );
+
+	if (m_pHomeEntity && gpGlobals->curtime>m_fCanGoHomeTime) { // Unable to find enemy. Go home (if we have a home and we've waited long enough) -- Issue #25
+		float dist = UTIL_DistApprox2D( m_pHomeEntity->WorldSpaceCenter(), WorldSpaceCenter() ); // Distance from guard to home
+		if (dist>HOME_MAX_DISTANCE) {
+			return SCHED_ANTLIONGUARD_GO_HOME;
+		}
+	}
 
 	// Move randomly for the moment
 	return SCHED_ANTLIONGUARD_CANT_ATTACK;
@@ -1197,6 +1243,16 @@ int CNPC_AntlionGuard::SelectSchedule( void )
 	{
 		m_flNextHeavyFlinchTime = gpGlobals->curtime + 8.0f;
 		return SCHED_ANTLIONGUARD_PHYSICS_DAMAGE_HEAVY;
+	}
+
+	if (m_bGoHome && gpGlobals->curtime>m_fCanGoHomeTime) { // Go home (if we have waited long enough) -- Issue #25
+		m_bGoHome = false;
+		float dist = UTIL_DistApprox2D( m_pHomeEntity->WorldSpaceCenter(), WorldSpaceCenter() ); // Distance from guard to home
+		if (dist>HOME_MAX_DISTANCE) {
+			return SCHED_ANTLIONGUARD_GO_HOME;
+		} else { // We are already home. But since we tried, record this for posterity
+			m_fCanGoHomeTime = gpGlobals->curtime + HOME_MIN_DELAY;
+		}
 	}
 
 	// Prefer to use physics, in this case
@@ -2234,6 +2290,12 @@ int CNPC_AntlionGuard::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	int nPreHealth = GetHealth();
 	int nDamageTaken = BaseClass::OnTakeDamage_Alive( dInfo );
 
+	// If health is under 50%, force guard to go home -- Issue #25
+	if (((float)GetHealth() / (float)GetMaxHealth())<0.5 && !m_ranHomeCrying) {
+		m_ranHomeCrying = true;
+		m_bGoHome = true;
+	}
+
 	// See if we've crossed a measured phase in our health and flinch from that to show we do take damage
 	if ( !m_bInCavern && HasCondition( COND_HEAVY_DAMAGE ) == false && ( info.GetDamageType() & DMG_BULLET ) )
 	{
@@ -2482,6 +2544,33 @@ void CNPC_AntlionGuard::StartTask( const Task_t *pTask )
 				TaskFail( FAIL_NO_ROUTE );
 			}
 		}
+		break;
+
+	case TASK_ANTLIONGUARD_GET_PATH_HOME: // Find next node to get "home" and move to it
+		{
+			int node = GetNavigator()->GetNetwork()->NearestNodeToPoint( this, m_pHomeEntity->GetAbsOrigin(), false );
+			CAI_Node *pNode = GetNavigator()->GetNetwork()->GetNode( node );
+			if( pNode == NULL )
+			{
+				TaskFail( FAIL_NO_ROUTE );
+				break;
+			}
+
+			Vector vecNodePos = pNode->GetPosition( GetHullType() );
+			AI_NavGoal_t goal( GOALTYPE_LOCATION, vecNodePos, ACT_RUN );
+			if ( GetNavigator()->SetGoal( goal ) )
+			{
+				TaskComplete();
+				break;
+			}
+
+			TaskFail( FAIL_NO_ROUTE );
+		}
+		break;
+
+	case TASK_ANTLIONGUARD_MADE_IT_HOME:
+		m_fCanGoHomeTime = gpGlobals->curtime + HOME_MIN_DELAY;
+		TaskComplete();
 		break;
 
 	case TASK_ANTLIONGUARD_GET_PATH_TO_NEAREST_NODE:
@@ -4673,6 +4762,8 @@ AI_BEGIN_CUSTOM_NPC( npc_antlionguard, CNPC_AntlionGuard )
 	DECLARE_TASK( TASK_ANTLIONGUARD_GET_CHASE_PATH_ENEMY_TOLERANCE )
 	DECLARE_TASK( TASK_ANTLIONGUARD_OPPORTUNITY_THROW )
 	DECLARE_TASK( TASK_ANTLIONGUARD_FIND_PHYSOBJECT )
+	DECLARE_TASK( TASK_ANTLIONGUARD_GET_PATH_HOME )
+	DECLARE_TASK( TASK_ANTLIONGUARD_MADE_IT_HOME )
 
 	//Activities
 	DECLARE_ACTIVITY( ACT_ANTLIONGUARD_SEARCH )
@@ -4956,6 +5047,26 @@ AI_BEGIN_CUSTOM_NPC( npc_antlionguard, CNPC_AntlionGuard )
 		"		COND_HEAVY_DAMAGE"
 		"		COND_ANTLIONGUARD_CAN_CHARGE"
 	);
+
+	//=========================================================
+	// > SCHED_ANTLIONGUARD_GO_HOME -- Issue #25
+	//=========================================================
+	DEFINE_SCHEDULE
+	(
+		SCHED_ANTLIONGUARD_GO_HOME,
+
+		"	Tasks"
+		"		TASK_STOP_MOVING									0"
+		"		TASK_SET_FAIL_SCHEDULE								SCHEDULE:SCHED_ALERT_FACE_BESTSOUND"
+		"		TASK_ANTLIONGUARD_GET_PATH_HOME						500"
+		"		TASK_RUN_PATH										0"
+		"		TASK_ANTLIONGUARD_MADE_IT_HOME						0"
+		"		TASK_WAIT_FOR_MOVEMENT								0"
+		"		TASK_FACE_ENEMY										0"
+		""
+		"	Interrupts"
+		"		COND_TASK_FAILED"
+	)
 
 	//=========================================================
 	// > PATROL_RUN

@@ -767,6 +767,10 @@ bool CGameRules::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		return false;
 	}
 
+	// Allow a "boss" npc to walk through all other NPCs -- Issue #25
+	if ( collisionGroup0 == COLLISION_GROUP_NPC && collisionGroup1 == COLLISION_GROUP_NPC_BOSS )
+		return false;
+
 	return true;
 }
 

@@ -399,6 +399,7 @@ enum Collision_Group_t
 	COLLISION_GROUP_PLAYER_MOVEMENT,  // For HL2, same as Collision_Group_Player, for
 										// TF2, this filters out other players and CBaseObjects
 	COLLISION_GROUP_NPC,			// Generic NPC group
+	COLLISION_GROUP_NPC_BOSS,		// NPC that is allowed to walk through all other NPCs -- Issue #25
 	COLLISION_GROUP_IN_VEHICLE,		// for any entity inside a vehicle
 	COLLISION_GROUP_WEAPON,			// for any weapons that need collision detection
 	COLLISION_GROUP_VEHICLE_CLIP,	// vehicle clip brush to restrict vehicle movement
