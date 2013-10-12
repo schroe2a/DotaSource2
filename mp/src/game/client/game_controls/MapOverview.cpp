@@ -689,7 +689,8 @@ bool CMapOverview::DrawIcon( MapObject_t *obj )
 		Vertex_t( MapToPanel ( pos4 ), Vector2D(0,1) )
 	};
 
-	surface()->DrawSetColor( 255, 255, 255, 255 );
+	//surface()->DrawSetColor( 255, 255, 255, 255 );
+	surface()->DrawSetColor( textColor->r(), textColor->g(), textColor->b(), 255 );
 	surface()->DrawSetTexture( textureID );
 	surface()->DrawTexturedPolygon( 4, points );
 
@@ -1067,7 +1068,8 @@ void CMapOverview::FireGameEvent( IGameEvent *event )
 	{
 		int entindex = event->GetInt( "entindex" );
 
-		 AddObject( "", entindex, 0 );
+		 int id = AddObject( NULL, entindex, 0 );
+		 //SetObjectText(id, "creep", Color( 0, 255, 0, 255 ));
 	}
 
 	else if ( Q_strcmp( type, "creep_death" ) == 0 )
@@ -1270,10 +1272,13 @@ int	CMapOverview::AddObject( const char *icon, int entity, float timeToLive )
 
 	obj.objectID = m_ObjectCounterID++;
 	obj.index = entity;
-	obj.icon = AddIconTexture( icon );
+	if (icon)
+		obj.icon = AddIconTexture( icon );
+	else
+		obj.icon = -1;
 	obj.size = m_flIconSize;
 	obj.status = -1;
-	
+			
 	if ( timeToLive > 0 )
 		obj.endtime = gpGlobals->curtime + timeToLive;
 	else
@@ -1403,5 +1408,11 @@ void CMapOverview::UpdateObjects()
 
 		obj->position = entity->GetAbsOrigin();
 		obj->angle = entity->GetAbsAngles();
+				
+		C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+		if (entity->InSameTeam(localPlayer))
+			obj->color = Color(0, 255, 0, 255);
+		else
+			obj->color = Color(255, 0, 0, 255);
 	}
 }

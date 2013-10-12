@@ -23,6 +23,11 @@ public:
 
 	bool			IsInPlayerSquad() const { return false; }
 
+	virtual int UpdateTransmitState()
+	{
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	}
+
 	//WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon *pWeapon );
 
 private:
