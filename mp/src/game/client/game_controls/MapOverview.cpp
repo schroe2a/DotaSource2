@@ -31,6 +31,7 @@ ConVar overview_names ( "overview_names",  "1", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_
 ConVar overview_tracks( "overview_tracks", "1", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Show player's tracks in map overview.\n" );
 ConVar overview_locked( "overview_locked", "1", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Locks map angle, doesn't follow view angle.\n" );
 ConVar overview_alpha( "overview_alpha",  "1.0", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Overview map translucency.\n" );
+ConVar overview_arrowscale( "overview_arrowscale", "3.0", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Scale of arrow in overview map.\n" );
 
 IMapOverviewPanel *g_pMapOverview = NULL; // we assume only one overview is created
 
@@ -665,6 +666,7 @@ bool CMapOverview::DrawIcon( MapObject_t *obj )
 	Color *statusColor = &obj->statusColor;
 
 	Vector offset;	offset.z = 0;
+	Vector offset2; offset2.z = 0;
 	
 	Vector2D pospanel = WorldToMap( pos );
 	pospanel = MapToPanel( pospanel );
@@ -688,6 +690,11 @@ bool CMapOverview::DrawIcon( MapObject_t *obj )
 	VectorYawRotate( offset, angle, offset );
 	Vector2D pos4 = WorldToMap( pos + offset );
 
+	offset2.x = scale * overview_arrowscale.GetFloat();
+	VectorYawRotate( offset2, angle, offset2 );
+	Vector2D mapPlayerArrow = WorldToMap( pos + offset2 );
+	Vector2D pnlPlayerArrow = MapToPanel( mapPlayerArrow );
+
 	Vertex_t points[4] =
 	{
 		Vertex_t( MapToPanel ( pos1 ), Vector2D(0,0) ),
@@ -700,6 +707,8 @@ bool CMapOverview::DrawIcon( MapObject_t *obj )
 	surface()->DrawSetColor( textColor->r(), textColor->g(), textColor->b(), 255 );
 	surface()->DrawSetTexture( textureID );
 	surface()->DrawTexturedPolygon( 4, points );
+
+	surface()->DrawLine( pospanel.x, pospanel.y, pnlPlayerArrow.x, pnlPlayerArrow.y );
 
 	int d = GetPixelOffset( scale);
 
@@ -968,10 +977,21 @@ void CMapOverview::DrawCamera()
 	//surface()->DrawFilledRect( center.x-2, center.y-2, center.x+2, center.y+2);
 
 	// Use the current local player map icon state to determine how to draw the camera.
-	surface()->DrawSetColor( 255, 0, 0, ((state+1)*255 / 10.0) );
+	surface()->DrawSetColor( 0, 255, 0, ((state+1)*255 / 10.0) );
 	surface()->DrawOutlinedCircle( center.x, center.y, size+2, 16 );
 
-	surface()->DrawSetColor( 255, 0, 0, 255 );
+	float yaw = p->angle[YAW];
+	Vector offset1( size*3, 0, 0 ); // point in front of player camera
+	Vector offset2( 0,  size+1, 0 );     // point on the right side of player
+	Vector offset3( 0, -(size+2), 0 );     // point on the left side of player
+
+	VectorYawRotate( offset1, -yaw, offset1 );
+	VectorYawRotate( offset2, -yaw, offset2 );
+	VectorYawRotate( offset3, -yaw, offset3 );
+	surface()->DrawLine( center.x + offset1.x, center.y + offset1.y, center.x + offset2.x, center.y + offset2.y );
+	surface()->DrawLine( center.x + offset1.x, center.y + offset1.y, center.x + offset3.x, center.y + offset3.y );
+
+	surface()->DrawSetColor( 0, 255, 0, 255 );
 	for (int i = 0; i <= min((state + 1), size); i++) {
 		surface()->DrawOutlinedCircle( center.x, center.y, i, 16 );
 	}
