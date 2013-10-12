@@ -245,6 +245,8 @@ void CMapOverview::UpdatePlayers()
 	if ( !g_PR )
 		return;
 
+	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+
 	// first disable all players health
 	for ( int i=0; i<MAX_PLAYERS; i++ )
 	{
@@ -254,10 +256,17 @@ void CMapOverview::UpdatePlayers()
 
 	for ( int i = 1; i<= gpGlobals->maxClients; i++)
 	{
+		C_BasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+
 		// update from global player resources
 		if ( g_PR && g_PR->IsConnected(i) )
 		{
 			MapPlayer_t *player = &m_Players[i-1];
+
+			if (pPlayer->InSameTeam(localPlayer))
+				player->color = Color(0, 255, 0, 255);
+			else
+				player->color = Color(255, 0, 0, 255);
 
 			player->health = g_PR->GetHealth( i );
 
@@ -269,13 +278,11 @@ void CMapOverview::UpdatePlayers()
 			if ( player->team != g_PR->GetTeam( i ) )
 			{
 				player->team = g_PR->GetTeam( i );
-				player->icon = m_TeamIcons[ GetIconNumberFromTeamNumber(player->team)  ];
-				player->color = m_TeamColors[ GetIconNumberFromTeamNumber(player->team) ];
+				player->icon = -1; //m_TeamIcons[ GetIconNumberFromTeamNumber(player->team)  ];
+				//player->color = m_TeamColors[ GetIconNumberFromTeamNumber(player->team) ];
 			}
 		}
-
-		C_BasePlayer *pPlayer = UTIL_PlayerByIndex( i );
-
+		
 		if ( !pPlayer )
 			continue;
 		
@@ -286,7 +293,7 @@ void CMapOverview::UpdatePlayers()
 		// update position of active players in our PVS
 		Vector position = pPlayer->EyePosition();
 		QAngle angles = pPlayer->EyeAngles();
-
+		
 		SetPlayerPositions( i-1, position, angles );
 	}
 }
@@ -441,11 +448,11 @@ bool CMapOverview::CanPlayerHealthBeSeen(MapPlayer_t *player)
 	if ( localPlayer->GetTeamNumber() <= TEAM_SPECTATOR )
 		return true;
 
-	if ( mp_forcecamera.GetInt() != OBS_ALLOW_ALL )
-	{
-		// if forcecamera is on, only show health for teammates
-		return ( localPlayer->GetTeamNumber() == player->team );
-	}
+	//if ( mp_forcecamera.GetInt() != OBS_ALLOW_ALL )
+	//{
+	//	// if forcecamera is on, only show health for teammates
+	//	return ( localPlayer->GetTeamNumber() == player->team );
+	//}
 
 	return true;
 }
@@ -1069,7 +1076,7 @@ void CMapOverview::FireGameEvent( IGameEvent *event )
 		int entindex = event->GetInt( "entindex" );
 
 		 int id = AddObject( NULL, entindex, 0 );
-		 //SetObjectText(id, "creep", Color( 0, 255, 0, 255 ));
+		 SetObjectIcon(id, NULL, 32);
 	}
 
 	else if ( Q_strcmp( type, "creep_death" ) == 0 )
@@ -1326,7 +1333,10 @@ void CMapOverview::SetObjectIcon( int objectID, const char *icon, float size )
 	if ( !obj )
 		return;
 
-	obj->icon = AddIconTexture( icon );
+	if (icon)
+		obj->icon = AddIconTexture( icon );
+	else
+		obj->icon = -1;
 	obj->size = size;
 }
 
