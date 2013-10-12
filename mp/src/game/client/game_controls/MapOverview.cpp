@@ -257,6 +257,9 @@ void CMapOverview::UpdatePlayers()
 	for ( int i = 1; i<= gpGlobals->maxClients; i++)
 	{
 		C_BasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+		
+		if ( !pPlayer )
+			continue;		
 
 		// update from global player resources
 		if ( g_PR && g_PR->IsConnected(i) )
@@ -282,10 +285,7 @@ void CMapOverview::UpdatePlayers()
 				//player->color = m_TeamColors[ GetIconNumberFromTeamNumber(player->team) ];
 			}
 		}
-		
-		if ( !pPlayer )
-			continue;
-		
+
 		// don't update if player is dormant
 		if ( pPlayer->IsDormant() )
 			continue;
