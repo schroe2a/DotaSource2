@@ -32,6 +32,9 @@ ConVar overview_tracks( "overview_tracks", "1", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_
 ConVar overview_locked( "overview_locked", "1", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Locks map angle, doesn't follow view angle.\n" );
 ConVar overview_alpha( "overview_alpha",  "1.0", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Overview map translucency.\n" );
 ConVar overview_arrowscale( "overview_arrowscale", "3.0", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Scale of arrow in overview map.\n" );
+ConVar overview_creep_size ( "overview_creep_size", "32.0", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Size of antlion guard in overview map.\n" );
+ConVar overview_alg_size ( "overview_alg_size", "96.0", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Size of antlion guard in overview map.\n" );
+ConVar overview_ambx_size ( "overview_ambx_size", "48.0", FCVAR_ARCHIVE | FCVAR_CLIENTCMD_CAN_EXECUTE, "Size of antlion guard in overview map.\n" );
 
 IMapOverviewPanel *g_pMapOverview = NULL; // we assume only one overview is created
 
@@ -194,6 +197,12 @@ void CMapOverview::Init( void )
 	// Issue#7: JSM - 2013-10-06 - listen for new mod events for creap spawn/death
 	ListenForGameEvent( "creep_spawn" );
 	ListenForGameEvent( "creep_death" );
+
+	// Issue#28: JSM - 2013-10-12 - listen for new mod events for antlionguard, ammobox spawn/death
+	ListenForGameEvent( "antlionguard_spawn" );
+	ListenForGameEvent( "antlionguard_death" );
+	ListenForGameEvent( "ammobox_spawn" );
+	ListenForGameEvent( "ammobox_death" );
 }
 
 void CMapOverview::InitTeamColorsAndIcons()
@@ -647,6 +656,9 @@ void CMapOverview::DrawObjects( )
 		tempObj.angle[YAW] = flAngle;
 		tempObj.text = text;
 		tempObj.statusColor = obj->color;
+		tempObj.objType = obj->objType;
+		if ( obj->objType == ENT_OBJTYPE_AMMO )
+			tempObj.color = Color( 255, 160, 0, 255 );
 
 		// draw icon
 		if ( !DrawIcon( &tempObj ) )
@@ -674,19 +686,19 @@ bool CMapOverview::DrawIcon( MapObject_t *obj )
 	if ( !IsInPanel( pospanel ) )
 		return false; // player is not within overview panel
 
-	offset.x = -scale;	offset.y = scale;
+	offset.x = -scale;	offset.y = scale; if ( obj->objType == ENT_OBJTYPE_AMMO ) { offset.x += scale; offset.y += scale; }
 	VectorYawRotate( offset, angle, offset );
 	Vector2D pos1 = WorldToMap( pos + offset );
 
-	offset.x = scale;	offset.y = scale;
+	offset.x = scale;	offset.y = scale; if ( obj->objType == ENT_OBJTYPE_AMMO ) { offset.x += scale; offset.y += scale; }
 	VectorYawRotate( offset, angle, offset );
 	Vector2D pos2 = WorldToMap( pos + offset );
 
-	offset.x = scale;	offset.y = -scale;
+	offset.x = scale;	offset.y = -scale; if ( obj->objType == ENT_OBJTYPE_AMMO ) { offset.x += scale; offset.y += scale; }
 	VectorYawRotate( offset, angle, offset );
 	Vector2D pos3 = WorldToMap( pos + offset );
 
-	offset.x = -scale;	offset.y = -scale;
+	offset.x = -scale;	offset.y = -scale; if ( obj->objType == ENT_OBJTYPE_AMMO ) { offset.x += scale; offset.y += scale; }
 	VectorYawRotate( offset, angle, offset );
 	Vector2D pos4 = WorldToMap( pos + offset );
 
@@ -708,7 +720,8 @@ bool CMapOverview::DrawIcon( MapObject_t *obj )
 	surface()->DrawSetTexture( textureID );
 	surface()->DrawTexturedPolygon( 4, points );
 
-	surface()->DrawLine( pospanel.x, pospanel.y, pnlPlayerArrow.x, pnlPlayerArrow.y );
+	if ( obj->objType != ENT_OBJTYPE_AMMO )
+		surface()->DrawLine( pospanel.x, pospanel.y, pnlPlayerArrow.x, pnlPlayerArrow.y );
 
 	int d = GetPixelOffset( scale);
 
@@ -930,7 +943,7 @@ void CMapOverview::SetMap(const char * levelname)
 	m_fFullZoom		= m_MapKeyValues->GetFloat("zoom", 1.0f );
 }
 
-void CMapOverview::ResetRound()
+void CMapOverview::ResetRound( int keepObjects )
 {
 	for (int i=0; i<MAX_PLAYERS; i++)
 	{
@@ -947,7 +960,20 @@ void CMapOverview::ResetRound()
 		p->position = Vector( 0, 0, 0 );
 	}
 
-	m_Objects.RemoveAll();
+	if ( keepObjects > 0 )
+	{
+		for ( int i = 0; i < m_Objects.Count(); i++ )
+		{
+			if ( ! (m_Objects[i].objType & keepObjects ) )
+			{
+				RemoveObject( i );
+			}
+		}
+	}
+	else
+	{
+		m_Objects.RemoveAll();
+	}
 }
 
 void CMapOverview::OnMousePressed( MouseCode code )
@@ -961,8 +987,6 @@ void CMapOverview::DrawCamera()
 
 	// draw a red center point
 	vec_t size = 4.0;
-	vec_t xScale = size;
-	vec_t yScale = size;
 
 	CBasePlayer *player = CBasePlayer::GetLocalPlayer();
 	if ( !player ) return;
@@ -1009,7 +1033,7 @@ void CMapOverview::FireGameEvent( IGameEvent *event )
 
 	else if ( Q_strcmp(type, "round_start") == 0 )
 	{
-		ResetRound();
+		ResetRound( ENT_OBJTYPE_ALG | ENT_OBJTYPE_AMMO );
 	}
 
 	else if ( Q_strcmp(type,"player_connect") == 0 )
@@ -1096,10 +1120,40 @@ void CMapOverview::FireGameEvent( IGameEvent *event )
 		int entindex = event->GetInt( "entindex" );
 
 		 int id = AddObject( NULL, entindex, 0 );
-		 SetObjectIcon(id, NULL, 32);
+		 SetObjectIcon( id, NULL, overview_creep_size.GetFloat() );
 	}
 
 	else if ( Q_strcmp( type, "creep_death" ) == 0 )
+	{
+		int entindex = event->GetInt( "entindex" );
+
+		RemoveObjectByIndex( entindex );
+	}
+
+	// Issue#28: JSM - 2013-10-12 - catching the firing of antlionguard, ammobox spawn/death event
+	else if ( Q_strcmp( type, "antlionguard_spawn" ) == 0 )
+	{
+		int entindex = event->GetInt( "entindex" );
+
+		int id = AddObject( NULL, entindex, 0, ENT_OBJTYPE_ALG );
+		 SetObjectIcon( id, NULL, overview_alg_size.GetFloat() );
+	}
+
+	else if ( Q_strcmp( type, "antlionguard_death" ) == 0 )
+	{
+		int entindex = event->GetInt( "entindex" );
+
+		RemoveObjectByIndex( entindex );
+	}
+	else if ( Q_strcmp( type, "ammobox_spawn" ) == 0 )
+	{
+		int entindex = event->GetInt( "entindex" );
+
+		int id = AddObject( NULL, entindex, 0, ENT_OBJTYPE_AMMO );
+		 SetObjectIcon( id, NULL, overview_ambx_size.GetFloat() );
+	}
+
+	else if ( Q_strcmp( type, "ammobox_death" ) == 0 )
 	{
 		int entindex = event->GetInt( "entindex" );
 
@@ -1293,7 +1347,7 @@ CMapOverview::MapObject_t* CMapOverview::FindObjectByID(int objectID)
 	return NULL;
 }
 
-int	CMapOverview::AddObject( const char *icon, int entity, float timeToLive )
+int	CMapOverview::AddObject( const char *icon, int entity, float timeToLive, int objType )
 {
 	MapObject_t obj; Q_memset( &obj, 0, sizeof(obj) );
 
@@ -1305,6 +1359,7 @@ int	CMapOverview::AddObject( const char *icon, int entity, float timeToLive )
 		obj.icon = -1;
 	obj.size = m_flIconSize;
 	obj.status = -1;
+	obj.objType = objType;
 			
 	if ( timeToLive > 0 )
 		obj.endtime = gpGlobals->curtime + timeToLive;

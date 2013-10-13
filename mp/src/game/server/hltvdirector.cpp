@@ -240,8 +240,13 @@ const char** CHLTVDirector::GetModEvents()
 	static const char *s_modevents[] =
 	{
 		// Issue#7: JSM - 2013-10-06 - new mod events for creep spawn/death
-		"creep_spawn",
+		// Issue#28: JSM - 2013-10-12 - new mod events for antlionguard, ammobox spawn/death
+		"ammobox_death",
+		"ammobox_spawn",
+		"antlionguard_death",
+		"antlionguard_spawn",
 		"creep_death",
+		"creep_spawn",
 		"hltv_status",
 		"hltv_chat",
 		"player_connect",

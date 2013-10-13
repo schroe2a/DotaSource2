@@ -59,4 +59,24 @@
 	{
 		"entindex"	"short"		// entindex of the creep entity that just died
 	}
+	
+	// Issue#28: JSM - 2013-10-12 - new mod events to indicate antlionguard, ammobox spawn/death
+	"antlionguard_spawn"
+	{
+		"entindex"	"short"		// entindex of the newly spawned antlionguard entity
+	}
+	
+	"antlionguard_death"
+	{
+		"entindex"	"short"		// entindex of the antlionguard entity that just died
+	}
+	"ammobox_spawn"
+	{
+		"entindex"	"short"		// entindex of the newly spawned ammobox entity
+	}
+	
+	"ammobox_death"
+	{
+		"entindex"	"short"		// entindex of the ammobox entity that just died
+	}
 }

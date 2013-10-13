@@ -46,6 +46,14 @@ void Dota_Resupply::Spawn( void )
 	SetCycle( 0 );
 
 	m_takedamage = DAMAGE_EVENTS_ONLY;
+
+	// Issue #28: JMS - 2013-10-12 - ammobox needs to fire a new modevent letting all clients know that one is spawned
+	IGameEvent *pEvent = gameeventmanager->CreateEvent( "ammobox_spawn" );
+	if ( pEvent )
+	{
+		pEvent->SetInt( "entindex", entindex() );
+		gameeventmanager->FireEvent( pEvent );
+	}
 }
 
 //------------------------------------------------------------------------------

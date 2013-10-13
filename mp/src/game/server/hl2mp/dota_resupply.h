@@ -2,6 +2,8 @@
 #include "baseanimating.h"
 #include "hl2mp_player.h"
 
+class Dota_Resupply;
+
 class Dota_Resupply : public CBaseAnimating
 {
 public:
@@ -22,6 +24,11 @@ public:
 	virtual int OnTakeDamage( const CTakeDamageInfo &info );
 
 	static bool ReSupplyPlayer( CHL2MP_Player * pPlayer );
+	// Issue #28: JMS - 2013-10-12 - Make antlion guards always update to the client
+	virtual int UpdateTransmitState()
+	{
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	}
 
 protected:
 

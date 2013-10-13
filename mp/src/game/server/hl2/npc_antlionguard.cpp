@@ -294,6 +294,12 @@ public:
 
 	virtual Activity	NPC_TranslateActivity( Activity baseAct );
 
+	// Issue #28: JMS - 2013-10-12 - Make antlion guards always update to the client
+	virtual int UpdateTransmitState()
+	{
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	}
+
 	bool	PassesDamageFilter( const CTakeDamageInfo &info );
 
 #if HL2_EPISODIC
@@ -888,6 +894,14 @@ void CNPC_AntlionGuard::Spawn( void )
 	Vector absMax = Vector(100,100,128);
 
 	CollisionProp()->SetSurroundingBoundsType( USE_SPECIFIED_BOUNDS, &absMin, &absMax );
+
+	// Issue #28: JMS - 2013-10-12 - AntlionGuard needs to fire a new modevent letting all clients know that one is spawned
+	IGameEvent *pEvent = gameeventmanager->CreateEvent( "antlionguard_spawn" );
+	if ( pEvent )
+	{
+		pEvent->SetInt( "entindex", entindex() );
+		gameeventmanager->FireEvent( pEvent );
+	}
 
 	// Spawn home entity
 	SpawnHome();
@@ -4453,6 +4467,14 @@ void CNPC_AntlionGuard::Event_Killed( const CTakeDamageInfo &info )
 #if ANTLIONGUARD_BLOOD_EFFECTS
 	m_iBleedingLevel = 0;
 #endif
+
+	// Issue #28: JMS - 2013-10-12 - Let clients know that an AntlionGuard died
+	IGameEvent *pEvent = gameeventmanager->CreateEvent( "antlionguard_death" );
+	if ( pEvent )
+	{
+		pEvent->SetInt( "entindex", entindex() );
+		gameeventmanager->FireEvent( pEvent );
+	}
 }
 
 //-----------------------------------------------------------------------------

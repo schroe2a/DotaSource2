@@ -9,6 +9,7 @@
 #define HLTVPANEL_H
 #ifdef _WIN32
 #pragma once
+
 #endif
 
 #include <vgui_controls/Panel.h>
@@ -56,6 +57,13 @@ public:
 		MAP_MODE_INSET,		// A little map up in a corner
 		MAP_MODE_FULL,		// Full screen, full map
 		MAP_MODE_RADAR		// In game radar, extra functionality
+	};
+
+	enum
+	{
+		ENT_OBJTYPE_UNK  = 0, // Unknown
+		ENT_OBJTYPE_ALG  = 1, // Antlion Guard
+		ENT_OBJTYPE_AMMO = 2  // Ammo Box
 	};
 
 	CMapOverview( const char *pElementName );
@@ -107,6 +115,7 @@ protected:	// private structures & types
 		int		flags;		// MAB_OBJECT_*
 		const char *text;	// text to draw underneath the icon
 		int		mapIconState; // Issue#7: JSM - 2013-10-06 - map icon state: 0..9
+		int     objType;    // Object type based on ENT_OBJTYPE enum
 	} MapObject_t;
 
 #define MAP_OBJECT_ALIGN_TO_MAP	(1<<0)
@@ -165,7 +174,7 @@ public:
 	virtual Vector2D WorldToMap( const Vector &worldpos );
 
 	// Object settings
-	virtual int		AddObject( const char *icon, int entity, float timeToLive ); // returns object ID, 0 = no entity, -1 = forever
+	virtual int		AddObject( const char *icon, int entity, float timeToLive, int objType = ENT_OBJTYPE_UNK ); // returns object ID, 0 = no entity, -1 = forever
 	virtual void	SetObjectIcon( int objectID, const char *icon, float size );  // icon world size
 	virtual void	SetObjectText( int objectID, const char *text, Color color ); // text under icon
 	virtual void	SetObjectStatus( int objectID, float value, Color statusColor ); // status bar under icon
@@ -196,7 +205,7 @@ protected:
 	virtual void	DrawMapPlayerTrails();
 	virtual void	UpdatePlayerTrails();
 	virtual void	UpdatePlayerMapIconState(); // Issue#7: JSM - 2013-10-06 - new Update method
-	virtual void	ResetRound();
+	virtual void	ResetRound( int keepObjects = ENT_OBJTYPE_UNK );
 	virtual void	InitTeamColorsAndIcons();
 	virtual void	UpdateSizeAndPosition();
 	virtual bool	RunHudAnimations(){ return true; }
