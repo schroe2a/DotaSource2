@@ -318,7 +318,7 @@ void CRecharge::Off(void)
 
 	m_iOn = 0;
 
-	if ((!m_iJuice) &&  ( ( m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime() ) > 0) )
+	if ((m_iJuice<=0) &&  ( ( m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime() ) > 0) )
 	{
 		SetNextThink( gpGlobals->curtime + m_iReactivate );
 		SetThink(&CRecharge::Recharge);
@@ -459,7 +459,7 @@ void CNewRecharge::SetInitialCharge( void )
 		return;
 	}
 
-	m_iMaxJuice =  sk_suitcharger.GetFloat();
+	m_iMaxJuice = 100.0f; // Issue #32: AMP - 2013-10-13 - Get health/armor faster
 }
 
 void CNewRecharge::Spawn()
@@ -649,16 +649,12 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		nMaxArmor = sk_suitcharger_citadel_maxarmor.GetInt();
 	}
 	
-	int nIncrementArmor = 1;
+	int nIncrementArmor = 2; // Issue #32: AMP - 2013-10-13 - Get health/armor faster
 
 	// The citadel charger gives more per charge and also gives health
 	if ( HasSpawnFlags(	SF_CITADEL_RECHARGER ) )
 	{
-		nIncrementArmor = 10;
-		
-#ifdef HL2MP
-		nIncrementArmor = 2;
-#endif
+		nIncrementArmor = 5; // Issue #32: AMP - 2013-10-13 - Get health/armor faster
 
 		// Also give health for the citadel version.
 		if ( pActivator->GetHealth() < pActivator->GetMaxHealth() && m_flNextCharge < gpGlobals->curtime )
@@ -756,7 +752,7 @@ void CNewRecharge::Off(void)
 
 	if ( m_iReactivate == 0 )
 	{
-		if ((!m_iJuice) && g_pGameRules->FlHEVChargerRechargeTime() > 0 )
+		if ((m_iJuice<=0) && g_pGameRules->FlHEVChargerRechargeTime() > 0 )
 		{
 			if ( HasSpawnFlags( SF_CITADEL_RECHARGER ) )
 			{

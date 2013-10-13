@@ -678,8 +678,10 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		EmitSound( filter, entindex(), "WallHealth.LoopingContinueCharge" );
 	}
 
+	int healthIncrease = 1 + (pPlayer->GetMaxHealth() / 50); // Issue #32: AMP - 2013-10-13 - Get health/armor faster
+
 	// charge the player
-	if ( pPlayer->TakeHealth( 1, DMG_GENERIC ) )
+	if ( pPlayer->TakeHealth( healthIncrease, DMG_GENERIC ) )
 	{
 		m_iJuice--;
 	}
