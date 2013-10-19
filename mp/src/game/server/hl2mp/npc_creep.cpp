@@ -116,8 +116,8 @@ void CNPC_Creep::Spawn()
 {
 	if (sv_dotaCreepUpdateRate.GetFloat()<-0.001f)
 		m_fNextFullUpdate= INT_MAX; // Never update
-	else 
-		m_fNextFullUpdate= 0.0f;
+	else
+		m_fNextFullUpdate= gpGlobals->curtime + ( (sv_dotaCreepUpdateRate.GetFloat() / 20) * ((entindex() * 7)%20) ); // Issue #33: AMP - 2013-10-19 - Evenly distribute creep network messages
 	CapabilitiesAdd( bits_CAP_FRIENDLY_DMG_IMMUNE );
 
 	if ( this->GetTeamNumber() != TEAM_COMBINE && this->GetTeamNumber() != TEAM_REBELS )
