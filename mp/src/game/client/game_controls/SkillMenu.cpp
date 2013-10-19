@@ -52,20 +52,30 @@ void CSkillMenu::ShowPanel(bool bShow)
 
 		SetControlText();
 
-		SetMouseInputEnabled( true );		
+		SetMouseInputEnabled( true );	
+		SetKeyBoardInputEnabled( true );
 	}
 	else
 	{
 		SetVisible( false );
 		SetMouseInputEnabled( false );
+		SetKeyBoardInputEnabled( false );
 	}
 
 	m_pViewPort->ShowBackGround( bShow );
 }
 
+// JMS - 2013-10-18 - any key will dismiss the skill menu (except for ESC and SPACE)
+void CSkillMenu::OnKeyCodePressed( vgui::KeyCode code )
+{
+	Close();
+	gViewPortInterface->ShowBackGround( false );
+	BaseClass::OnKeyCodePressed( code );
+}
+
 void CSkillMenu::OnCommand( const char *command )
 {
-	if ( Q_stricmp( command, "vguicancel" ) )
+	if ( Q_stricmp( command, "vguicancel" ) )  // if command is not to cancel
 	{
 		engine->ClientCmd( const_cast<char *>( command ) );
 

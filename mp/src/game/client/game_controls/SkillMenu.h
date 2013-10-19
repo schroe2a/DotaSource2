@@ -2,6 +2,7 @@
 
 #include <vgui_controls/Frame.h>
 #include <vgui_controls/Button.h>
+#include <vgui/KeyCode.h>
 #include <game/client/iviewport.h>
 
 namespace vgui
@@ -37,6 +38,7 @@ protected:
 	void SetLabelText(const char *textEntryName, const char *text);
 
 	virtual void OnCommand( const char *command );
+	virtual void OnKeyCodePressed( vgui::KeyCode code );
 
 	virtual void SetControlText();
 
