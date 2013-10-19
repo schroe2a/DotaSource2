@@ -8,6 +8,7 @@
 #include "tier0/memdbgon.h"
 
 ConVar	dota_creep_grenades( "dota_creep_grenades","5");
+ConVar	sv_dotaCreepUpdateRate( "sv_dotaCreepUpdateRate", "1.0");
 
 static const char *g_ppszRandomHeads[] = 
 {
@@ -102,8 +103,21 @@ void CNPC_Creep::SelectRebelModel()
 	SetModelName( AllocPooledString( CFmtStr( "models/Humans/%s/%s", (const char *)(CFmtStr("Group03%s", ( IsMedic() ) ? "m" : "" )), pszModelName ) ) );
 }
 
+// Determine if creep that is out of range of the player transmit its position/etc. Based on svar sv_dotaCreepUpdateRate (default 1.0 -- once per second)
+int CNPC_Creep::ShouldTransmit(const CCheckTransmitInfo *pInfo) { // Issue #33: AMP - 2013-10-18 - Set creep update rate
+	if (gpGlobals->curtime>=m_fNextFullUpdate) {
+		m_fNextFullUpdate = gpGlobals->curtime + sv_dotaCreepUpdateRate.GetFloat();
+		return FL_EDICT_ALWAYS;
+	} else 
+		return FL_EDICT_DONTSEND;
+}
+
 void CNPC_Creep::Spawn()
 {
+	if (sv_dotaCreepUpdateRate.GetFloat()<-0.001f)
+		m_fNextFullUpdate= INT_MAX; // Never update
+	else 
+		m_fNextFullUpdate= 0.0f;
 	CapabilitiesAdd( bits_CAP_FRIENDLY_DMG_IMMUNE );
 
 	if ( this->GetTeamNumber() != TEAM_COMBINE && this->GetTeamNumber() != TEAM_REBELS )
