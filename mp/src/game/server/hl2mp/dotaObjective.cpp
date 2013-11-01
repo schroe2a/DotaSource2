@@ -21,12 +21,14 @@ BEGIN_DATADESC( DotaObjective )
 	
 END_DATADESC()
 
-ConVar dotaLaneMode( "sv_dotaLaneMode", "-1", FCVAR_GAMEDLL | FCVAR_NOTIFY ); // Issue #24: AMP - 2013-10-04 - Conditionally open lanes
+ConVar dotaLaneMode( "sv_dotaLaneMode", "-1", FCVAR_GAMEDLL | FCVAR_NOTIFY );	// Issue #24: AMP - 2013-10-04 - Conditionally open lanes
+ConVar sv_dotaObjectiveUpdateRate( "sv_dotaObjectiveUpdateRate", "1.0");		// Issue #35: JMS - 2013-10-27 - Update rate for objectives to clients
 
 DotaObjective::DotaObjective(void)
 {
 	m_timesHit = 0;
 	m_bMet = false;
+	m_bInit = false;
 }
 
 void DotaObjective::Spawn( )
@@ -61,6 +63,7 @@ int DotaObjective::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		else
 		{
 			m_timesHit++;
+			m_timesHit = min(m_timesHit, OBJECTIVE_HEALTHI); // make sure times hit never goes above the maximum times an objective can be hit!
 
 			CRecipientFilter user;
 			user.AddRecipientsByTeam( this->GetTeam() );
@@ -70,11 +73,21 @@ int DotaObjective::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 			UTIL_ClientPrintFilter( user, HUD_PRINTCENTER, szText );
 			
 			if( playerAttacker )
-				ClientPrint( playerAttacker, HUD_PRINTTALK, UTIL_VarArgs("Gate has %i health left.\n", 30 - m_timesHit) );
+				ClientPrint( playerAttacker, HUD_PRINTTALK, UTIL_VarArgs("Gate has %i health left.\n", OBJECTIVE_HEALTHI - m_timesHit) );
 
-			if (m_timesHit >= 30)
+			if (m_timesHit >= OBJECTIVE_HEALTHI)
 			{
 				TakeAction(DOBJ_ACTION_CLOSE);
+			} else {
+				IGameEvent *pEvent = gameeventmanager->CreateEvent( "objectivegate_attacked" );
+
+				if ( pEvent )
+				{
+					pEvent->SetString( "lane", GetLane() );
+					pEvent->SetInt( "team", this->GetTeamNumber() );
+					pEvent->SetFloat( "health", (OBJECTIVE_HEALTHF - m_timesHit)/OBJECTIVE_HEALTHF );
+					gameeventmanager->FireEvent( pEvent );
+				}
 			}
 		}
 	}
@@ -88,6 +101,15 @@ int DotaObjective::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 int DotaObjective::TakeAction( int dobjAction ) { // Issue #24: AMP - 2013-10-04 - Lane manipulation
 	if (dobjAction & DOBJ_ACTION_CLOSE) {
 		PropSetAnim( "Close" );
+
+		// Issue #35: JMS - 2013-10-27 - fire event to clients
+		IGameEvent *pEvent = gameeventmanager->CreateEvent( "objectivegate_close" );
+		if ( pEvent )
+		{
+			pEvent->SetString( "lane", GetLane() );
+			pEvent->SetInt( "team", this->GetTeamNumber() );
+			gameeventmanager->FireEvent( pEvent );
+		}
 
 		m_bMet = true;			
 				
@@ -114,6 +136,16 @@ int DotaObjective::TakeAction( int dobjAction ) { // Issue #24: AMP - 2013-10-04
 		}
 		return true;
 	} else if (dobjAction & DOBJ_ACTION_OPEN) {
+
+		// Issue #35: JMS - 2013-10-27 - fire event to clients
+		IGameEvent *pEvent = gameeventmanager->CreateEvent( "objectivegate_open" );
+		if ( pEvent )
+		{
+			pEvent->SetString( "lane", GetLane() );
+			pEvent->SetInt( "team", this->GetTeamNumber() );
+			gameeventmanager->FireEvent( pEvent );
+		}
+
 		m_timesHit = 0;
 		m_bMet = false;
 		CreepMaker * maker = (CreepMaker*)gEntList.FindEntityByName( NULL, m_creepMakerName );
@@ -148,4 +180,26 @@ BOOL DotaObjective::CheckLaneMode( ) { // Issue #24: AMP - 2013-10-04 - Conditio
 		return false;
 	}
 	return strstr(objectiveName, laneToFind)!=NULL;
+}
+
+const char* DotaObjective::GetLane()
+{
+	const char* objectiveName = this->m_creepMakerName.ToCStr();
+	if (objectiveName==NULL)
+		return NULL;
+
+	if (Q_strstr(objectiveName, "left") != NULL)
+	{
+		return "LEFT";
+	}
+	if (Q_strstr(objectiveName, "center") != NULL)
+	{
+		return "CENTER";
+	}
+	if (Q_strstr(objectiveName, "right") != NULL)
+	{
+		return "RIGHT";
+	}
+
+	return NULL;
 }

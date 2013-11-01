@@ -616,4 +616,17 @@
 		"wide"					"480"
 		"tall"					"0"
 	}
+
+	HudGates
+	{
+		"fieldName"		"HudGates"
+		"xpos"			"c-54"
+		"ypos"			"2"
+		"wide"			"108"
+		"tall"			"22"
+		"visible"		"0"
+		"enabled"		"1"
+
+		"PaintBackgroundType"	"2"
+	}
 }

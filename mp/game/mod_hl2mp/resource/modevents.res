@@ -79,4 +79,22 @@
 	{
 		"entindex"	"short"		// entindex of the ammobox entity that just died
 	}
+
+	// Issue #35: JMS - 2013-10-27 - new mod events to indicate the spawn of objective gates in Dota Source
+	"objectivegate_open"
+	{
+		"lane"		"string"	// "LEFT", "CENTER", "RIGHT"
+		"team"		"short"		// BaseEntity's team number
+	}
+	"objectivegate_close"
+	{
+		"lane"		"string"	// "LEFT", "CENTER", "RIGHT"
+		"team"		"short"		// BaseEntity's team number
+	}
+	"objectivegate_attacked"
+	{
+		"lane"		"string"	// "LEFT", "CENTER", "RIGHT"
+		"team"		"short"		// BaseEntity's team number
+		"health"	"float"		// Amount of health left for the attached gate
+	}
 }

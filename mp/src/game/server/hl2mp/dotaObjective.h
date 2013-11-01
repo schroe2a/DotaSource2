@@ -1,6 +1,9 @@
 #pragma once
 #include "props.h"
 
+#define OBJECTIVE_HEALTHI 30   // This is the number of times the objective has to take mele damage in order to be "killed" (objective reached)
+#define OBJECTIVE_HEALTHF 30.0 // This is the number of times the objective has to take mele damage in order to be "killed" (objective reached)
+
 class DotaObjective : public CDynamicProp
 {
 	DECLARE_DATADESC();
@@ -29,4 +32,8 @@ public:
 
 protected:
 	int		m_timesHit;
+	const char* GetLane();
+
+private:
+	bool		m_bInit;
 };
