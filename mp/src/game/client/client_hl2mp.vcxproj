@@ -487,6 +487,7 @@ exit 1
     <ClInclude Include="..\..\game\shared\hintsystem.h" />
     <ClInclude Include="history_resource.h" />
     <ClInclude Include="hl2mp\c_BaseSkill.h" />
+    <ClInclude Include="hl2mp\hud_gates.h" />
     <ClInclude Include="hltvcamera.h" />
     <ClInclude Include="hud.h" />
     <ClInclude Include="hud_basechat.h" />
@@ -888,6 +889,7 @@ exit 1
     <ClCompile Include="game_controls\MouseoverPanelButton.cpp" />
     <ClCompile Include="game_controls\SkillMenu.cpp" />
     <ClCompile Include="hl2mp\c_BaseSkill.cpp" />
+    <ClCompile Include="hl2mp\hud_gates.cpp" />
     <ClCompile Include="hud_level.cpp" />
     <ClCompile Include="hud_money.cpp" />
     <ClCompile Include="hud_Skills.cpp" />
